@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AGE VPN - Admin System</title>
+    <title>AGE VPN - Cloud Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary-grad: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); --white: #ffffff; --bg: #f4f7f6; }
+        :root { --p-grad: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); --white: #ffffff; --bg: #f4f7f6; }
         body, html { height: 100%; margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); }
-        #loginPage { height: 100%; background: var(--primary-grad); display: flex; justify-content: center; align-items: center; position: fixed; width: 100%; z-index: 1000; }
+        #loginPage { height: 100%; background: var(--p-grad); display: flex; justify-content: center; align-items: center; position: fixed; width: 100%; z-index: 1000; }
         .login-box { width: 320px; text-align: center; color: white; padding: 40px; border-radius: 30px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
         .input-group { background: white; border-radius: 50px; padding: 12px 25px; margin-bottom: 20px; display: flex; align-items: center; }
         .input-group input { border: none; outline: none; width: 100%; margin-left: 10px; font-size: 16px; color: #333; }
@@ -16,184 +16,146 @@
         #mainDashboard { display: none; padding: 25px; }
         .nav-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
-        .stat-card { padding: 20px; border-radius: 15px; color: white; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .stat-card { padding: 20px; border-radius: 15px; color: white; text-align: center; }
         .card { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); margin-bottom: 20px; }
-        .form-grid { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; align-items: end; }
-        .form-grid input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #eee; background: #fafafa; }
+        .form-grid { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 15px; align-items: end; }
+        .form-grid input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #eee; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { text-align: left; padding: 12px; color: #888; font-size: 13px; border-bottom: 2px solid #f8f8f8; }
-        td { padding: 12px; border-bottom: 1px solid #f8f8f8; font-size: 14px; }
-        .copy-link { color: #00bcd4; text-decoration: none; font-size: 12px; font-weight: bold; cursor: pointer; }
-        .status-text { font-size: 12px; font-weight: bold; margin-bottom: 10px; display: block; text-align: center; }
+        th { text-align: left; padding: 15px; color: #888; font-size: 13px; border-bottom: 2px solid #f8f8f8; }
+        td { padding: 15px; border-bottom: 1px solid #f8f8f8; font-size: 14px; }
+        .sync-label { font-size: 12px; font-weight: bold; text-align: center; margin-bottom: 10px; display: block; }
     </style>
 </head>
 <body>
 
     <div id="loginPage">
         <div class="login-box">
-            <h1>AGE VPN</h1>
+            <h1>AGE VPN</h1> 
             <div class="input-group"><i class="fas fa-user" style="color:#3a7bd5"></i><input type="text" id="adminU" placeholder="Admin"></div>
             <div class="input-group"><i class="fas fa-lock" style="color:#3a7bd5"></i><input type="password" id="adminP" placeholder="Password"></div>
-            <button class="login-btn" onclick="checkLogin()">Login Panel</button>
+            <button class="login-btn" onclick="login()">Enter Panel</button>
         </div>
     </div>
 
     <div id="mainDashboard">
         <div class="nav-bar">
             <h2 style="color:#333; margin:0;">AGE VPN Admin</h2>
-            <button onclick="location.reload()" style="background:#ff2d55; color:white; border:none; padding:10px 20px; border-radius:12px; font-weight:bold; cursor:pointer;">Logout</button>
+            <button onclick="location.reload()" style="background:#ff2d55; color:white; border:none; padding:10px 20px; border-radius:12px; cursor:pointer;">Logout</button>
         </div>
 
-        <span id="syncStatus" class="status-text">Connecting...</span>
+        <div id="statusLabel" class="sync-label">Checking Cloud...</div>
 
         <div class="stat-grid">
-            <div class="stat-card" style="background:var(--primary-grad)"><h3>Clients</h3><h2 id="totalU">0</h2></div>
-            <div class="stat-card" style="background:linear-gradient(135deg,#ff5e7d,#ff2d55)"><h3>IP Limit</h3><h2>1</h2></div>
-            <div class="stat-card" style="background:linear-gradient(135deg,#ffb347,#ff9500)"><h3>Server IP</h3><p style="font-size:12px; margin:0;">157.85.103.207</p></div>
+            <div class="stat-card" style="background:var(--p-grad)"><h3>Clients</h3><h2 id="totalU">0</h2></div>
+            <div class="stat-card" style="background:linear-gradient(135deg,#ff5e7d,#ff2d55)"><h3>IP Limit</h3><h2>1</h2></div> 
+            <div class="stat-card" style="background:linear-gradient(135deg,#ffb347,#ff9500)"><h3>Server</h3><p style="font-size:12px;">157.85.103.207</p></div>
         </div>
 
         <div class="card">
-            <h3 id="formTitle" style="color:#3a7bd5; margin-top:0;">+ Create VIP User</h3>
+            <h3 id="formTitle" style="color:#3a7bd5;">+ Create VIP User</h3>
             <div class="form-grid">
-                <div><label style="font-size:11px;">Username</label><input type="text" id="newU"></div>
-                <div><label style="font-size:11px;">Days</label><input type="number" id="newD" value="30"></div>
-                <div><label style="font-size:11px;">Token</label><input type="text" id="newT" value="null"></div>
+                <div><label style="font-size:11px;">Username</label><input type="text" id="username"></div>
+                <div><label style="font-size:11px;">Days</label><input type="number" id="days" value="30"></div>
+                <div><label style="font-size:11px;">Token</label><input type="text" id="userToken" value="null"></div>
                 <input type="hidden" id="editId">
-                <button id="submitBtn" onclick="saveUser()" style="background:#00bcd4; color:white; border:none; padding:12px 20px; border-radius:10px; font-weight:bold; cursor:pointer;">Save Account</button>
+                <button id="submitBtn" onclick="saveUser()" style="background:#00bcd4; color:white; border:none; padding:12px 20px; border-radius:10px; cursor:pointer;">Save Account</button>
             </div>
         </div>
 
         <div class="card" style="overflow-x:auto;">
             <table>
-                <thead><tr><th>Name</th><th>Token ID</th><th>Expiry</th><th>Config</th><th>Action</th></tr></thead>
-                <tbody id="userList"></tbody>
+                <thead><tr><th>Username</th><th>Token</th><th>Expiry</th><th>Actions</th></tr></thead>
+                <tbody id="userTable"></tbody>
             </table>
         </div>
     </div>
 
 <script>
-    // GitHub Security Bypass (Encoded Token)
-    const encodedToken = "Z2hwX1FhaG1Mb0x2RVZ2OFlwbTNpbHFmY25tRmFJSFdLNFBvM0IzUA==";
-    const GITHUB_TOKEN = atob(encodedToken); 
-    
+    // New Token Integration
+    const G_TOKEN = "Ghp_JXHID9xSXpfQvrUbmmqKB9D8NsM5aE3HyXxF";
     const OWNER = "kyawkolatt2026-alt";
     const REPO = "myanmar";
     const FILE = "vip.json";
     const URL = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE}`;
-    
-    const UUID = "f0c5c822-ef5b-431f-85d0-776bec0eaea7";
-    const IP = "157.85.103.207";
 
     let users = [];
     let currentSha = "";
 
-    function checkLogin() {
+    function login() {
         if(document.getElementById('adminU').value === "admin" && document.getElementById('adminP').value === "1234") {
             document.getElementById('loginPage').style.display = 'none';
             document.getElementById('mainDashboard').style.display = 'block';
-            loadData();
+            fetchData();
         } else { alert("Login Failed!"); }
     }
 
-    async function loadData() {
-        updateStatus("Syncing...", "#f39c12");
+    async function fetchData() {
+        updateLabel("Connecting...", "orange");
         try {
-            const res = await fetch(URL, { headers: { "Authorization": `token ${GITHUB_TOKEN}` } });
+            const res = await fetch(URL, { headers: { "Authorization": `token ${G_TOKEN}` } });
             const data = await res.json();
             currentSha = data.sha;
             users = JSON.parse(atob(data.content));
             render();
-            updateStatus("Cloud Synced ✅", "#2ecc71");
-        } catch (e) { updateStatus("Error Loading Cloud Data! ❌", "#ff2d55"); }
+            updateLabel("Cloud Synced ✅", "green");
+        } catch (e) { updateLabel("Cloud Error ❌", "red"); }
     }
 
     async function saveUser() {
-        const id = document.getElementById('editId').value;
-        const name = document.getElementById('newU').value;
-        const days = document.getElementById('newD').value;
-        const token = document.getElementById('newT').value;
+        const name = document.getElementById('username').value;
+        const days = document.getElementById('days').value || 30;
+        const uTok = document.getElementById('userToken').value;
+        if(!name) return alert("Enter Username!");
 
-        if(!name || !days) return alert("Please fill details!");
-        updateStatus("Saving to Cloud...", "#f39c12");
-
+        updateLabel("Saving...", "orange");
         const exp = new Date();
         exp.setDate(exp.getDate() + parseInt(days));
-        const expStr = exp.toISOString().split('T')[0];
+        users.push({ id: Date.now(), name, token: uTok, expiry: exp.toISOString().split('T')[0] });
 
-        if(id) {
-            const idx = users.findIndex(u => u.id == id);
-            users[idx] = { ...users[idx], name, token, expiry: expStr, dayCount: days };
-        } else {
-            users.push({ id: Date.now(), name, token, expiry: expStr, dayCount: days });
-        }
-
-        await sync();
-        resetForm();
-    }
-
-    async function sync() {
         const content = btoa(unescape(encodeURIComponent(JSON.stringify(users, null, 2))));
         try {
             const res = await fetch(URL, {
                 method: "PUT",
-                headers: { "Authorization": `token ${GITHUB_TOKEN}`, "Content-Type": "application/json" },
-                body: JSON.stringify({ message: "Update VIP", content, sha: currentSha })
+                headers: { "Authorization": `token ${G_TOKEN}`, "Content-Type": "application/json" },
+                body: JSON.stringify({ message: "Update", content, sha: currentSha })
             });
-            const result = await res.json();
-            currentSha = result.content.sha;
+            const d = await res.json();
+            currentSha = d.content.sha;
             render();
-            updateStatus("Cloud Synced ✅", "#2ecc71");
-        } catch (e) { updateStatus("Save Failed! ❌", "#ff2d55"); }
+            updateLabel("Cloud Synced ✅", "green");
+            document.getElementById('username').value = "";
+        } catch (e) { updateLabel("Fail! ❌", "red"); }
     }
 
     function render() {
         document.getElementById('totalU').innerText = users.length;
-        document.getElementById('userList').innerHTML = users.map(u => {
-            const link = `vless://${UUID}@${IP}:80?encryption=none&security=none&type=tcp&headerType=http&host=www.speedtest.net&path=%2F#AGE-${encodeURIComponent(u.name)}`;
-            return `<tr>
+        document.getElementById('userTable').innerHTML = users.map(u => `
+            <tr>
                 <td><strong>${u.name}</strong></td>
-                <td style="color:#888; font-size:12px;">${u.token}</td>
-                <td style="color:#3a7bd5; font-weight:bold;">${u.expiry}</td>
-                <td><a href="javascript:void(0)" class="copy-link" onclick="navigator.clipboard.writeText('${link}');alert('Copied!')">Copy Config</a></td>
-                <td>
-                    <i class="fas fa-edit edit-btn" style="color:#3a7bd5; cursor:pointer; margin-right:10px;" onclick="editUser(${u.id})"></i>
-                    <i class="fas fa-trash del-btn" style="color:#ff2d55; cursor:pointer;" onclick="deleteUser(${u.id})"></i>
-                </td>
-            </tr>`;
-        }).join('');
+                <td>${u.token}</td>
+                <td style="color:#3a7bd5;">${u.expiry}</td>
+                <td><i class="fas fa-trash" style="color:red; cursor:pointer;" onclick="delUser(${u.id})"></i></td>
+            </tr>`).join('');
     }
 
-    function editUser(id) {
-        const u = users.find(x => x.id == id);
-        document.getElementById('editId').value = u.id;
-        document.getElementById('newU').value = u.name;
-        document.getElementById('newT').value = u.token;
-        document.getElementById('newD').value = u.dayCount || 30;
-        document.getElementById('formTitle').innerText = "Editing: " + u.name;
-        document.getElementById('submitBtn').innerText = "Update Now";
+    async function delUser(id) {
+        if(!confirm("Delete?")) return;
+        users = users.filter(x => x.id !== id);
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify(users, null, 2))));
+        const res = await fetch(URL, {
+            method: "PUT",
+            headers: { "Authorization": `token ${G_TOKEN}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ message: "Del", content, sha: currentSha })
+        });
+        const d = await res.json();
+        currentSha = d.content.sha;
+        render();
     }
 
-    async function deleteUser(id) {
-        if(!confirm("Are you sure?")) return;
-        updateStatus("Deleting...", "#f39c12");
-        users = users.filter(u => u.id !== id);
-        await sync();
-    }
-
-    function resetForm() {
-        document.getElementById('editId').value = "";
-        document.getElementById('newU').value = "";
-        document.getElementById('newD').value = "30";
-        document.getElementById('newT').value = "null";
-        document.getElementById('formTitle').innerText = "+ Create VIP User";
-        document.getElementById('submitBtn').innerText = "Save Account";
-    }
-
-    function updateStatus(txt, col) {
-        const s = document.getElementById('syncStatus');
-        s.innerText = txt; s.style.color = col;
+    function updateLabel(t, c) {
+        const l = document.getElementById('statusLabel');
+        l.innerText = t; l.style.color = c;
     }
 </script>
 </body>
-    </html>
-                                                                
+</html>
