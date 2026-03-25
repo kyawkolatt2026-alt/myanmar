@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AGE VPN - Secure Cloud Admin</title>
+    <title>AGE VPN - Device Manager</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --p-grad: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); --white: #ffffff; --bg: #f4f7f6; }
         body, html { height: 100%; margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); }
         #loginPage { height: 100%; background: var(--p-grad); display: flex; justify-content: center; align-items: center; position: fixed; width: 100%; z-index: 1000; }
-        .login-box { width: 320px; text-align: center; color: white; padding: 40px; border-radius: 30px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .login-box { width: 320px; text-align: center; color: white; padding: 40px; border-radius: 30px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
         .input-group { background: white; border-radius: 50px; padding: 12px 25px; margin-bottom: 20px; display: flex; align-items: center; }
-        .input-group input { border: none; outline: none; width: 100%; margin-left: 10px; font-size: 16px; color: #333; }
+        .input-group input { border: none; outline: none; width: 100%; margin-left: 10px; font-size: 16px; }
         .login-btn { background: white; color: #3a7bd5; border: none; width: 100%; padding: 14px; border-radius: 50px; font-weight: bold; cursor: pointer; }
         #mainDashboard { display: none; padding: 25px; }
         .nav-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
@@ -23,10 +23,11 @@
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th { text-align: left; padding: 15px; color: #888; font-size: 13px; border-bottom: 2px solid #f8f8f8; }
         td { padding: 15px; border-bottom: 1px solid #f8f8f8; font-size: 14px; }
-        .copy-link { color: #00bcd4; text-decoration: none; font-size: 12px; cursor: pointer; font-weight: bold; }
         .sync-label { font-size: 12px; font-weight: bold; text-align: center; margin-bottom: 10px; display: block; }
-        .del-btn { color: #ff2d55; cursor: pointer; transition: 0.2s; }
-        .del-btn:hover { transform: scale(1.2); }
+        .btn-icon { cursor: pointer; margin-left: 10px; transition: 0.2s; }
+        .btn-edit { color: #3a7bd5; }
+        .btn-del { color: #ff2d55; }
+        .btn-icon:hover { transform: scale(1.2); }
     </style>
 </head>
 <body>
@@ -42,40 +43,40 @@
 
     <div id="mainDashboard">
         <div class="nav-bar">
-            <h2 style="color:#333; margin:0;"><i class="fas fa-bolt"></i> AGE VPN Admin</h2>
+            <h2 style="color:#333; margin:0;"><i class="fas fa-users-cog"></i> Device Manager</h2>
             <button onclick="location.reload()" style="background:#ff2d55; color:white; border:none; padding:10px 20px; border-radius:12px; cursor:pointer; font-weight:bold;">Logout</button>
         </div>
 
         <div id="statusLabel" class="sync-label">Checking Cloud...</div>
 
         <div class="stat-grid">
-            <div class="stat-card" style="background:var(--p-grad)"><h3>Clients</h3><h2 id="totalU">0</h2></div>
-            <div class="stat-card" style="background:linear-gradient(135deg,#ff5e7d,#ff2d55)"><h3>IP Limit</h3><h2>1 Device</h2></div> 
-            <div class="stat-card" style="background:linear-gradient(135deg,#ffb347,#ff9500)"><h3>Server</h3><p style="font-size:12px;font-weight:bold;">157.85.103.207</p></div>
+            <div class="stat-card" style="background:var(--p-grad)"><h3>Total Devices</h3><h2 id="totalU">0</h2></div>
+            <div class="stat-card" style="background:linear-gradient(135deg,#ff5e7d,#ff2d55)"><h3>IP Limit</h3><h2>1</h2></div> 
+            <div class="stat-card" style="background:linear-gradient(135deg,#ffb347,#ff9500)"><h3>Server</h3><p style="font-size:11px;font-weight:bold;">157.85.103.207</p></div>
         </div>
 
         <div class="card">
-            <h3 style="color:#3a7bd5; margin:0 0 15px;">+ Create VIP User</h3>
+            <h3 id="formTitle" style="color:#3a7bd5; margin:0 0 15px;">+ Create New Device</h3>
             <div class="form-grid">
-                <div><label style="font-size:11px;font-weight:bold;">Username</label><input type="text" id="username" placeholder="Name"></div>
+                <input type="hidden" id="editId">
+                <div><label style="font-size:11px;font-weight:bold;">Device Name</label><input type="text" id="username"></div>
                 <div><label style="font-size:11px;font-weight:bold;">Days</label><input type="number" id="days" value="30"></div>
-                <div><label style="font-size:11px;font-weight:bold;">Custom Token</label><input type="text" id="userToken" value="null"></div>
-                <button onclick="saveUser()" style="background:#00bcd4; color:white; border:none; padding:12px 25px; border-radius:10px; font-weight:bold; cursor:pointer;"><i class="fas fa-plus-circle"></i> Save</button>
+                <div><label style="font-size:11px;font-weight:bold;">Token ID</label><input type="text" id="userToken" value="null"></div>
+                <button id="submitBtn" onclick="saveUser()" style="background:#00bcd4; color:white; border:none; padding:12px 25px; border-radius:10px; font-weight:bold; cursor:pointer;">Save Device</button>
             </div>
+            <button id="cancelBtn" onclick="resetForm()" style="display:none; margin-top:10px; background:#888; color:white; border:none; padding:5px 15px; border-radius:5px; cursor:pointer;">Cancel Edit</button>
         </div>
 
         <div class="card" style="overflow-x:auto;">
             <table>
-                <thead><tr><th>Name</th><th>Token ID</th><th>Expiry</th><th>Actions</th></tr></thead>
+                <thead><tr><th>Device Name</th><th>Token ID</th><th>Expiry</th><th>Actions</th></tr></thead>
                 <tbody id="userTable"></tbody>
             </table>
         </div>
     </div>
 
 <script>
-    // Cloudflare Worker URL (Your Secure Bridge)
     const API_URL = "https://jolly-mouse-e734.kyawkolatt2026.workers.dev";
-
     let users = [];
     let currentSha = "";
 
@@ -88,32 +89,75 @@
     }
 
     async function fetchData() {
-        updateLabel("Connecting to Cloud...", "orange");
+        updateLabel("Syncing...", "orange");
         try {
             const res = await fetch(API_URL);
-            if (!res.ok) throw new Error();
             const data = await res.json();
             currentSha = data.sha;
             users = JSON.parse(atob(data.content));
             render();
             updateLabel("Cloud Synced ✅", "green");
-        } catch (e) { updateLabel("Cloud Error ❌ (Check Worker Secret)", "red"); }
+        } catch (e) { updateLabel("Cloud Error ❌", "red"); }
+    }
+
+    function render() {
+        document.getElementById('totalU').innerText = users.length;
+        document.getElementById('userTable').innerHTML = users.map(u => `
+            <tr>
+                <td><strong>${u.name}</strong></td>
+                <td style="font-size:12px; color:#888;">${u.token}</td>
+                <td style="color:#3a7bd5; font-weight:bold;">${u.expiry}</td>
+                <td>
+                    <i class="fas fa-edit btn-icon btn-edit" onclick="editUser(${u.id})"></i>
+                    <i class="fas fa-trash-alt btn-icon btn-del" onclick="delUser(${u.id})"></i>
+                </td>
+            </tr>`).join('');
     }
 
     async function saveUser() {
+        const id = document.getElementById('editId').value;
         const name = document.getElementById('username').value;
         const days = document.getElementById('days').value || 30;
         const uTok = document.getElementById('userToken').value;
 
-        if(!name) return alert("Enter Username!");
+        if(!name) return alert("Enter Name!");
         updateLabel("Saving...", "orange");
 
-        const exp = new Date();
-        exp.setDate(exp.getDate() + parseInt(days));
-        users.push({ id: Date.now(), name, token: uTok, expiry: exp.toISOString().split('T')[0] });
+        if(id) {
+            // Edit Mode
+            const index = users.findIndex(u => u.id == id);
+            users[index].name = name;
+            users[index].token = uTok;
+            // Expiry ကို မပြင်ချင်ရင် ဒီအတိုင်းထား၊ ပြင်ချင်ရင် ရက်ပေါင်းပြန်တွက်လို့ရပါတယ်
+        } else {
+            // New Mode
+            const exp = new Date();
+            exp.setDate(exp.getDate() + parseInt(days));
+            users.push({ id: Date.now(), name, token: uTok, expiry: exp.toISOString().split('T')[0] });
+        }
 
         await sync();
+        resetForm();
+    }
+
+    function editUser(id) {
+        const user = users.find(u => u.id == id);
+        document.getElementById('editId').value = user.id;
+        document.getElementById('username').value = user.name;
+        document.getElementById('userToken').value = user.token;
+        document.getElementById('formTitle').innerText = "Edit Device Info";
+        document.getElementById('submitBtn').innerText = "Update Device";
+        document.getElementById('cancelBtn').style.display = "inline-block";
+        window.scrollTo(0,0);
+    }
+
+    function resetForm() {
+        document.getElementById('editId').value = "";
         document.getElementById('username').value = "";
+        document.getElementById('userToken').value = "null";
+        document.getElementById('formTitle').innerText = "+ Create New Device";
+        document.getElementById('submitBtn').innerText = "Save Device";
+        document.getElementById('cancelBtn').style.display = "none";
     }
 
     async function sync() {
@@ -128,22 +172,11 @@
             currentSha = d.content.sha;
             render();
             updateLabel("Cloud Synced ✅", "green");
-        } catch (e) { updateLabel("Save Failed! ❌", "red"); }
-    }
-
-    function render() {
-        document.getElementById('totalU').innerText = users.length;
-        document.getElementById('userTable').innerHTML = users.map(u => `
-            <tr>
-                <td><strong>${u.name}</strong></td>
-                <td style="font-size:12px; color:#888;">${u.token}</td>
-                <td style="color:#3a7bd5; font-weight:bold;">${u.expiry}</td>
-                <td><i class="fas fa-trash-alt del-btn" onclick="delUser(${u.id})"></i></td>
-            </tr>`).join('');
+        } catch (e) { updateLabel("Sync Failed! ❌", "red"); }
     }
 
     async function delUser(id) {
-        if(!confirm("ဖျက်မှာ သေချာပါသလား?")) return;
+        if(!confirm("Delete this device?")) return;
         updateLabel("Deleting...", "orange");
         users = users.filter(x => x.id !== id);
         await sync();
@@ -155,4 +188,5 @@
     }
 </script>
 </body>
-</html>
+    </html>
+    
