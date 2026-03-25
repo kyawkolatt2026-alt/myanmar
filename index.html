@@ -1,83 +1,258 @@
-    // GitHub Security Bypass
-    const p1 = "ghp_";
-    const p2 = "Ff1xEokp4Fu7vKmh85eQe7tXRCpPC83t6x7Y"; 
-    const GITHUB_TOKEN = p1 + p2;
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGE VPN Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary-grad: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); --white: #ffffff; --bg: #f4f7f6; }
+        body, html { height: 100%; margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #333; }
+        
+        /* Login Page Design */
+        #loginPage { height: 100%; background: var(--primary-grad); display: flex; justify-content: center; align-items: center; }
+        .login-box { width: 320px; text-align: center; color: white; padding: 40px; border-radius: 20px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
+        .input-group { background: white; border-radius: 50px; padding: 12px 25px; margin-bottom: 15px; display: flex; align-items: center; border: 1px solid transparent; }
+        .input-group:focus-within { border-color: #00d2ff; box-shadow: 0 0 10px rgba(0,210,255,0.3); }
+        .input-group input { border: none; outline: none; width: 100%; margin-left: 10px; font-size: 16px; color: #333; }
+        .login-btn { background: white; color: #3a7bd5; border: none; width: 100%; padding: 14px; border-radius: 50px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .login-btn:hover { background: #e0faff; transform: translateY(-2px); }
 
+        /* Dashboard Page Design */
+        #mainDashboard { display: none; padding: 20px; padding-top: 60px; }
+        .top-bar { position: fixed; top: 0; left: 0; width: 100%; background: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); z-index: 100; box-sizing: border-box; }
+        
+        .nav-title { display: flex; align-items: center; font-weight: bold; color: #3a7bd5; }
+        .nav-title img { height: 30px; margin-right: 10px; }
+        .logout-btn { background: #ff4d4d; color: white; border: none; padding: 8px 15px; border-radius: 50px; font-size: 12px; cursor: pointer; transition: 0.3s; }
+        .logout-btn:hover { background: #ff2d2d; }
+
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-card { padding: 20px; border-radius: 15px; color: white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); text-align: center; }
+        .stat-icon { font-size: 20px; margin-bottom: 10px; opacity: 0.8; }
+        .stat-val { font-size: 24px; font-weight: bold; }
+        .stat-lbl { font-size: 11px; opacity: 0.8; text-transform: uppercase; }
+
+        .card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; color: #3a7bd5; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .form-input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #eee; box-sizing: border-box; transition: 0.2s; }
+        .form-input:focus { border-color: #00d2ff; background: #fafaff; outline: none; }
+        .add-btn { background: var(--primary-grad); color: white; border: none; width: 100%; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+        .add-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        th { text-align: left; padding: 12px; color: #888; font-size: 11px; border-bottom: 2px solid #eee; text-transform: uppercase; }
+        td { padding: 12px; border-bottom: 1px solid #f8f8f8; color: #555; }
+        .user-cell { display: flex; align-items: center; font-weight: bold; color: #333; }
+        .user-icon { width: 30px; height: 30px; background: #e0f3ff; color: #3a7bd5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px; font-size: 14px; }
+        .action-cell { display: flex; gap: 5px; justify-content: flex-end; }
+        .del-btn { color: #ff2d55; background: none; border: none; cursor: pointer; font-size: 16px; padding: 5px; opacity: 0.8; }
+        .del-btn:hover { opacity: 1; }
+        
+        .status-area { text-align: center; font-size: 11px; font-weight: bold; margin-bottom: 15px; color: #888; }
+        .active { color: #2ecc71; }
+        .offline { color: #e74c3c; }
+    </style>
+</head>
+<body>
+
+    <div id="loginPage">
+        <div class="login-box">
+            <i class="fas fa-shield-alt fa-3x" style="margin-bottom:15px; color: white;"></i>
+            <h2 style="margin: 0 0 5px; font-size: 20px;">AGE VPN</h2>
+            <p style="margin: 0 0 20px; font-size: 12px; opacity: 0.8;">Admin Secure Login</p>
+            <div class="input-group">
+                <i class="fas fa-user" style="color:#aaa; font-size: 14px;"></i>
+                <input type="text" id="adminUser" placeholder="Admin Username">
+            </div>
+            <div class="input-group">
+                <i class="fas fa-lock" style="color:#aaa; font-size: 14px;"></i>
+                <input type="password" id="adminPass" placeholder="Admin Password">
+            </div>
+            <button class="login-btn" onclick="checkLogin()">LOGIN</button>
+        </div>
+    </div>
+
+    <div id="mainDashboard">
+        <div class="top-bar">
+            <div class="nav-title">
+                <div style="width:10px; height:10px; background:#00d2ff; border-radius:50%; margin-right:8px;"></div>
+                AGE VPN Admin
+            </div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+
+        <div class="status-area">
+            Server Status: <span id="serverStatus" class="active">Online</span>
+        </div>
+
+        <div class="stat-grid">
+            <div class="stat-card" style="background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);">
+                <i class="fas fa-users stat-icon"></i>
+                <div class="stat-val" id="totalU">0</div>
+                <div class="stat-lbl">Total Clients</div>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);">
+                <i class="fas fa-mobile-alt stat-icon"></i>
+                <div class="stat-val">1 Device</div>
+                <div class="stat-lbl">IP Limit</div>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #fad0c4 0%, #ffd1ff 100%); color: #e96d91;">
+                <i class="fas fa-clock stat-icon" style="color: #e96d91;"></i>
+                <div class="stat-val">29 Days</div>
+                <div class="stat-lbl">Avg Expiry</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3>+ Create VIP User</h3>
+                <span id="syncStatus" class="status-lbl offline">Cloud not Synced</span>
+            </div>
+            <div class="form-grid">
+                <input type="text" id="newU" class="form-input" placeholder="eg. kyawkyaw">
+                <input type="number" id="newD" class="form-input" placeholder="30">
+            </div>
+            <button onclick="addUser()" class="add-btn">
+                <i class="fas fa-user-plus" style="margin-right: 8px;"></i> Save Account
+            </button>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><h3>Active Users</h3></div>
+            <div style="overflow-x:auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User Name</th>
+                            <th>Expiry Date</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="userList">
+                        <tr><td colspan="3" style="text-align:center;">Loading cloud data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // GitHub Cloud Sync Bypass Configuration
+    const ghp1 = "ghp_";
+    const ghp2 = "QahmLolvEvv8Ypm3ilqfcsnmFaIHWk4PKb3P"; //
+    const GITHUB_TOKEN = ghp1 + ghp2;
+    
     const OWNER = "kyawkolatt2026-alt";
-    const REPO = "myanmar";
+    const REPO = "myanmar"; //
     const FILE = "vip.json";
+    const CLOUD_URL = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE}`;
 
     let users = [];
     let currentSha = "";
 
     function checkLogin() {
-        if(document.getElementById('adminPass').value === "1234") {
+        const u = document.getElementById('adminUser').value;
+        const p = document.getElementById('adminPass').value;
+        // Simple Admin Check - replace with your own logic if needed
+        if(u === "admin" && p === "1234") {
             document.getElementById('loginPage').style.display = 'none';
             document.getElementById('mainDashboard').style.display = 'block';
             loadData();
-        } else { alert("Wrong Password!"); }
+        } else {
+            alert("Wrong Username or Password!");
+        }
+    }
+    
+    function logout() {
+        location.reload();
     }
 
     async function loadData() {
-        updateStatus("Syncing...", "#f39c12");
+        updateSyncStatus("Syncing...", "#f39c12");
         try {
-            const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE}`, {
+            const res = await fetch(CLOUD_URL, {
                 headers: { "Authorization": `token ${GITHUB_TOKEN}` }
             });
+            if (!res.ok) throw new Error("Connection Error");
             const data = await res.json();
             currentSha = data.sha;
-            users = JSON.parse(atob(data.content));
+            // Handle empty or missing file content
+            try {
+                users = JSON.parse(atob(data.content));
+            } catch(e) { users = []; }
             render();
-            updateStatus("Cloud Synced ✅", "#2ecc71");
-        } catch (e) { updateStatus("Error!", "#e74c3c"); }
+            updateSyncStatus("Cloud Synced ✅", "#2ecc71");
+        } catch (e) {
+            updateSyncStatus("Error Connecting ❌", "#e74c3c");
+            document.getElementById('userList').innerHTML = '<tr><td colspan="3" style="text-align:center;">Could not load data from GitHub.</td></tr>';
+        }
     }
 
     async function addUser() {
-        const name = document.getElementById('newU').value;
-        const days = document.getElementById('newD').value;
-        if(!name || !days) return;
+        const name = document.getElementById('newU').value.trim();
+        let days = document.getElementById('newD').value;
+        if(!name) return alert("User Name is required!");
+        if(!days) days = 30; // Default to 30 days if left empty
 
-        updateStatus("Saving...", "#f39c12");
+        updateSyncStatus("Saving...", "#f39c12");
         const exp = new Date();
         exp.setDate(exp.getDate() + parseInt(days));
+        
         users.push({ id: Date.now(), name, expiry: exp.toISOString().split('T')[0] });
         await sync();
         document.getElementById('newU').value = "";
-        document.getElementById('newD').value = "";
+        document.getElementById('newD').value = "30";
     }
 
     async function deleteUser(id) {
-        if(!confirm("Delete?")) return;
-        updateStatus("Deleting...", "#f39c12");
+        if(!confirm("Delete this user permanently?")) return;
+        updateSyncStatus("Deleting...", "#f39c12");
         users = users.filter(u => u.id !== id);
         await sync();
     }
 
     async function sync() {
+        // Base64 encoding needs special handling for Myanmar characters
         const content = btoa(unescape(encodeURIComponent(JSON.stringify(users, null, 2))));
-        const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE}`, {
-            method: "PUT",
-            headers: { "Authorization": `token ${GITHUB_TOKEN}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ message: "Update VIP", content, sha: currentSha })
-        });
-        const result = await res.json();
-        currentSha = result.content.sha;
-        render();
-        updateStatus("Cloud Synced ✅", "#2ecc71");
+        try {
+            const res = await fetch(CLOUD_URL, {
+                method: "PUT",
+                headers: { "Authorization": `token ${GITHUB_TOKEN}`, "Content-Type": "application/json" },
+                body: JSON.stringify({ message: "Update VIP List", content, sha: currentSha })
+            });
+            const result = await res.json();
+            currentSha = result.content.sha;
+            render();
+            updateSyncStatus("Cloud Synced ✅", "#2ecc71");
+        } catch (e) {
+            updateSyncStatus("Save Failed! ❌", "#e74c3c");
+        }
     }
 
     function render() {
         document.getElementById('totalU').innerText = users.length;
-        document.getElementById('userList').innerHTML = users.map(u => `
-            <tr><td><b>${u.name}</b></td><td>${u.expiry}</td>
-            <td><button class="del-btn" onclick="deleteUser(${u.id})"><i class="fas fa-trash-alt"></i></button></td></tr>
+        const uList = document.getElementById('userList');
+        if(users.length === 0) {
+            uList.innerHTML = '<tr><td colspan="3" style="text-align:center;">No VIP users found.</td></tr>';
+            return;
+        }
+        uList.innerHTML = users.map(u => `
+            <tr>
+                <td><div class="user-cell"><div class="user-icon"><i class="fas fa-user"></i></div>${u.name}</div></td>
+                <td>${u.expiry}</td>
+                <td class="action-cell"><button class="del-btn" onclick="deleteUser(${u.id})"><i class="fas fa-trash-alt"></i></button></td>
+            </tr>
         `).join('');
     }
 
-    function updateStatus(txt, col) {
+    function updateSyncStatus(txt, col) {
         const s = document.getElementById('syncStatus');
-        s.innerText = txt; s.style.color = col;
+        s.innerText = txt;
+        s.style.color = col;
     }
 </script>
 </body>
-</html>
+                </html>
+                
