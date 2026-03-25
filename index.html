@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AGE VPN Admin - Secure Cloud</title>
+    <title>AGE VPN - Secure Cloud Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --p-grad: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); --white: #ffffff; --bg: #f4f7f6; }
@@ -25,6 +25,8 @@
         td { padding: 15px; border-bottom: 1px solid #f8f8f8; font-size: 14px; }
         .copy-link { color: #00bcd4; text-decoration: none; font-size: 12px; cursor: pointer; font-weight: bold; }
         .sync-label { font-size: 12px; font-weight: bold; text-align: center; margin-bottom: 10px; display: block; }
+        .del-btn { color: #ff2d55; cursor: pointer; transition: 0.2s; }
+        .del-btn:hover { transform: scale(1.2); }
     </style>
 </head>
 <body>
@@ -40,7 +42,7 @@
 
     <div id="mainDashboard">
         <div class="nav-bar">
-            <h2 style="color:#333; margin:0;">AGE VPN Admin</h2>
+            <h2 style="color:#333; margin:0;"><i class="fas fa-bolt"></i> AGE VPN Admin</h2>
             <button onclick="location.reload()" style="background:#ff2d55; color:white; border:none; padding:10px 20px; border-radius:12px; cursor:pointer; font-weight:bold;">Logout</button>
         </div>
 
@@ -48,43 +50,31 @@
 
         <div class="stat-grid">
             <div class="stat-card" style="background:var(--p-grad)"><h3>Clients</h3><h2 id="totalU">0</h2></div>
-            <div class="stat-card" style="background:linear-gradient(135deg,#ff5e7d,#ff2d55)"><h3>IP Limit</h3><h2>1</h2></div> 
-            <div class="stat-card" style="background:linear-gradient(135deg,#ffb347,#ff9500)"><h3>Server</h3><p style="font-size:12px;">157.85.103.207</p></div>
+            <div class="stat-card" style="background:linear-gradient(135deg,#ff5e7d,#ff2d55)"><h3>IP Limit</h3><h2>1 Device</h2></div> 
+            <div class="stat-card" style="background:linear-gradient(135deg,#ffb347,#ff9500)"><h3>Server</h3><p style="font-size:12px;font-weight:bold;">157.85.103.207</p></div>
         </div>
 
         <div class="card">
-            <h3 id="formTitle" style="color:#3a7bd5; margin:0 0 15px;">+ Create VIP User</h3>
+            <h3 style="color:#3a7bd5; margin:0 0 15px;">+ Create VIP User</h3>
             <div class="form-grid">
-                <div><label style="font-size:11px;">Username</label><input type="text" id="username"></div>
-                <div><label style="font-size:11px;">Days</label><input type="number" id="days" value="30"></div>
-                <div><label style="font-size:11px;">Token</label><input type="text" id="userToken" value="null"></div>
-                <button id="submitBtn" onclick="saveUser()" style="background:#00bcd4; color:white; border:none; padding:12px 20px; border-radius:10px; font-weight:bold; cursor:pointer;">Save Account</button>
+                <div><label style="font-size:11px;font-weight:bold;">Username</label><input type="text" id="username" placeholder="Name"></div>
+                <div><label style="font-size:11px;font-weight:bold;">Days</label><input type="number" id="days" value="30"></div>
+                <div><label style="font-size:11px;font-weight:bold;">Custom Token</label><input type="text" id="userToken" value="null"></div>
+                <button onclick="saveUser()" style="background:#00bcd4; color:white; border:none; padding:12px 25px; border-radius:10px; font-weight:bold; cursor:pointer;"><i class="fas fa-plus-circle"></i> Save</button>
             </div>
         </div>
 
         <div class="card" style="overflow-x:auto;">
             <table>
-                <thead><tr><th>Name</th><th>Token ID</th><th>Expiry</th><th>Config</th><th>Actions</th></tr></thead>
+                <thead><tr><th>Name</th><th>Token ID</th><th>Expiry</th><th>Actions</th></tr></thead>
                 <tbody id="userTable"></tbody>
             </table>
         </div>
     </div>
 
 <script>
-    // GitHub Security Bypass: Split token into pieces to avoid detection
-    const p1 = "ghp_";
-    const p2 = "JXHID9xSXpfQ";
-    const p3 = "vrUbmmqKB9D8";
-    const p4 = "NsM5aE3HyXxF";
-    const FINAL_TOKEN = p1 + p2 + p3 + p4;
-
-    const OWNER = "kyawkolatt2026-alt";
-    const REPO = "myanmar";
-    const FILE = "vip.json";
-    const API_URL = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE}`;
-
-    const UUID = "f0c5c822-ef5b-431f-85d0-776bec0eaea7";
-    const IP = "157.85.103.207";
+    // Cloudflare Worker URL (Your Secure Bridge)
+    const API_URL = "https://jolly-mouse-e734.kyawkolatt2026.workers.dev";
 
     let users = [];
     let currentSha = "";
@@ -100,16 +90,14 @@
     async function fetchData() {
         updateLabel("Connecting to Cloud...", "orange");
         try {
-            const res = await fetch(API_URL, { 
-                headers: { "Authorization": `token ${FINAL_TOKEN}`, "Accept": "application/vnd.github.v3+json" } 
-            });
-            if (!res.ok) throw new Error("Cloud Error");
+            const res = await fetch(API_URL);
+            if (!res.ok) throw new Error();
             const data = await res.json();
             currentSha = data.sha;
             users = JSON.parse(atob(data.content));
             render();
             updateLabel("Cloud Synced ✅", "green");
-        } catch (e) { updateLabel("Cloud Error ❌ (Token might be revoked)", "red"); }
+        } catch (e) { updateLabel("Cloud Error ❌ (Check Worker Secret)", "red"); }
     }
 
     async function saveUser() {
@@ -133,7 +121,7 @@
         try {
             const res = await fetch(API_URL, {
                 method: "PUT",
-                headers: { "Authorization": `token ${FINAL_TOKEN}`, "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ message: "Update Data", content, sha: currentSha })
             });
             const d = await res.json();
@@ -145,20 +133,18 @@
 
     function render() {
         document.getElementById('totalU').innerText = users.length;
-        document.getElementById('userTable').innerHTML = users.map(u => {
-            const link = `vless://${UUID}@${IP}:80?encryption=none&security=none&type=tcp&headerType=http&host=www.speedtest.net&path=%2F#AGE-${encodeURIComponent(u.name)}`;
-            return `<tr>
+        document.getElementById('userTable').innerHTML = users.map(u => `
+            <tr>
                 <td><strong>${u.name}</strong></td>
                 <td style="font-size:12px; color:#888;">${u.token}</td>
-                <td style="color:#3a7bd5;">${u.expiry}</td>
-                <td><span class="copy-link" onclick="navigator.clipboard.writeText('${link}');alert('Copied!')">Copy</span></td>
-                <td><i class="fas fa-trash" style="color:red; cursor:pointer;" onclick="delUser(${u.id})"></i></td>
-            </tr>`;
-        }).join('');
+                <td style="color:#3a7bd5; font-weight:bold;">${u.expiry}</td>
+                <td><i class="fas fa-trash-alt del-btn" onclick="delUser(${u.id})"></i></td>
+            </tr>`).join('');
     }
 
     async function delUser(id) {
-        if(!confirm("Delete?")) return;
+        if(!confirm("ဖျက်မှာ သေချာပါသလား?")) return;
+        updateLabel("Deleting...", "orange");
         users = users.filter(x => x.id !== id);
         await sync();
     }
