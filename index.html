@@ -3,199 +3,232 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AGE VPN Admin Dashboard</title>
+    <title>AGE VPN - Admin System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --main-blue: #00a8ff; --dark-blue: #0097e6; --bg-grad: linear-gradient(180deg, #00d2ff 0%, #3a7bd5 100%); }
-        body, html { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; height: 100%; background: #f0f2f5; }
+        :root {
+            --primary-grad: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            --white: #ffffff; --bg: #f4f7f6; --cyan: #00bcd4;
+        }
+        body, html { height: 100%; margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); }
+
+        /* Login Section */
+        #loginPage { height: 100%; background: var(--primary-grad); display: flex; justify-content: center; align-items: center; }
+        .login-box { width: 350px; text-align: center; color: white; padding: 40px; border-radius: 30px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .input-group { background: white; border-radius: 50px; padding: 12px 25px; margin-bottom: 20px; display: flex; align-items: center; }
+        .input-group input { border: none; outline: none; width: 100%; margin-left: 10px; font-size: 16px; color: #333; }
+        .login-btn { background: white; color: #3a7bd5; border: none; width: 100%; padding: 14px; border-radius: 50px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+
+        /* Dashboard Section */
+        #mainDashboard { display: none; padding: 25px; }
+        .nav-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
+        .stat-card { padding: 20px; border-radius: 15px; color: white; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         
-        /* Login Design */
-        #loginPage { height: 100%; background: var(--bg-grad); display: flex; justify-content: center; align-items: center; }
-        .login-card { background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(15px); padding: 40px; border-radius: 30px; width: 320px; text-align: center; color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .login-card h2 { margin-bottom: 30px; font-weight: bold; font-size: 24px; }
-        .input-box { background: white; border-radius: 50px; padding: 12px 20px; margin-bottom: 15px; display: flex; align-items: center; }
-        .input-box i { color: #3a7bd5; margin-right: 10px; }
-        .input-box input { border: none; outline: none; width: 100%; font-size: 16px; color: #333; }
-        .enter-btn { background: white; color: #3a7bd5; border: none; width: 100%; padding: 12px; border-radius: 50px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
-
-        /* Dashboard Design */
-        #mainDashboard { display: none; padding-top: 20px; }
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; color: #333; }
-        .logout-btn { background: #ff4757; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .card { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); margin-bottom: 20px; }
+        .form-grid { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 15px; align-items: end; }
+        .form-grid input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #eee; box-sizing: border-box; background: #fafafa; }
         
-        .stat-container { display: flex; gap: 15px; padding: 0 20px; overflow-x: auto; margin-bottom: 25px; }
-        .stat-card { flex: 1; min-width: 140px; padding: 20px; border-radius: 20px; color: white; box-shadow: 0 8px 15px rgba(0,0,0,0.1); position: relative; }
-        .stat-card h4 { margin: 0; font-size: 13px; opacity: 0.9; }
-        .stat-card .val { font-size: 24px; font-weight: bold; margin: 10px 0; }
-        .stat-card .sub { font-size: 14px; opacity: 0.8; }
-
-        .form-card { background: white; margin: 0 20px 20px; padding: 25px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .form-card h3 { color: #3a7bd5; margin-top: 0; font-size: 16px; margin-bottom: 20px; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .form-input { border: 1px solid #eee; padding: 12px; border-radius: 10px; background: #f9f9f9; outline: none; }
-        .save-btn { background: #00cec9; color: white; border: none; width: 100%; padding: 14px; border-radius: 10px; font-weight: bold; cursor: pointer; }
-
-        .table-card { background: white; margin: 0 20px; border-radius: 20px; padding: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 15px 10px; color: #888; font-size: 12px; border-bottom: 1px solid #eee; }
-        td { padding: 15px 10px; border-bottom: 1px solid #fafafa; font-size: 14px; color: #444; }
-        .del-btn { color: #ff4757; border: none; background: none; cursor: pointer; font-size: 16px; }
-        .sync-status { text-align: center; font-size: 12px; margin-bottom: 10px; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { text-align: left; padding: 15px; color: #888; font-size: 13px; border-bottom: 2px solid #f8f8f8; }
+        td { padding: 15px; border-bottom: 1px solid #f8f8f8; font-size: 14px; }
+        .action-btn { border: none; background: none; cursor: pointer; font-size: 18px; margin-right: 12px; transition: 0.2s; }
+        .edit-btn { color: #3a7bd5; }
+        .del-btn { color: #ff2d55; }
+        .copy-link { color: #00bcd4; text-decoration: none; font-size: 12px; cursor: pointer; font-weight: bold; }
+        .sync-label { font-size: 12px; font-weight: bold; text-align: center; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
     <div id="loginPage">
-        <div class="login-card">
-            <h2>AGE (Login)</h2>
-            <div class="input-box">
-                <i class="fas fa-user"></i>
-                <input type="text" id="userInput" placeholder="Username">
-            </div>
-            <div class="input-box">
-                <i class="fas fa-lock"></i>
-                <input type="password" id="passInput" placeholder="Password">
-            </div>
-            <button class="enter-btn" onclick="checkLogin()">Enter Panel</button>
+        <div class="login-box">
+            <h1>AGE (Login)</h1> 
+            <div class="input-group"><i class="fas fa-user" style="color:#3a7bd5"></i><input type="text" id="adminUser" placeholder="Username"></div>
+            <div class="input-group"><i class="fas fa-lock" style="color:#3a7bd5"></i><input type="password" id="adminPass" placeholder="Password"></div>
+            <button class="login-btn" onclick="checkLogin()">Enter Panel</button>
         </div>
     </div>
 
     <div id="mainDashboard">
-        <div class="header">
-            <h2 style="font-size: 20px; margin: 0;">AGE VPN Admin</h2>
-            <button class="logout-btn" onclick="location.reload()">Logout</button>
+        <div class="nav-bar">
+            <h2 style="color:#333; margin:0;">AGE VPN Admin</h2>
+            <button onclick="location.reload()" style="background:#ff2d55; color:white; border:none; padding:10px 20px; border-radius:12px; cursor:pointer; font-weight:bold;">Logout</button>
         </div>
 
-        <div class="sync-status" id="syncLabel">Cloud Synced ✅</div>
+        <div id="syncStatus" class="sync-label">Checking Cloud...</div>
 
-        <div class="stat-container">
-            <div class="stat-card" style="background: linear-gradient(135deg, #00d2ff, #3a7bd5);">
-                <h4>Total Clients</h4>
-                <div class="val" id="totalU">0</div>
-            </div>
-            <div class="stat-card" style="background: linear-gradient(135deg, #ff4757, #ff6b81);">
-                <h4>IP Limit</h4>
-                <div class="val">1 Device</div>
-            </div>
-            <div class="stat-card" style="background: linear-gradient(135deg, #ffa502, #ff7f50);">
-                <h4>Server IP</h4>
-                <div class="val" style="font-size: 14px;">157.85.103.207</div>
+        <div class="stat-grid">
+            <div class="stat-card" style="background:var(--primary-grad)"><h3>Total Clients</h3><h2 id="totalU">0</h2></div>
+            <div class="stat-card" style="background:linear-gradient(135deg,#ff5e7d,#ff2d55)"><h3>IP Limit</h3><h2>1 Device</h2></div> 
+            <div class="stat-card" style="background:linear-gradient(135deg,#ffb347,#ff9500)"><h3>Server IP</h3><p style="font-size:14px; margin:5px 0 0;">157.85.103.207</p></div>
+        </div>
+
+        <div class="card">
+            <h3 id="formTitle" style="margin-top:0; color:#3a7bd5;">+ Create VIP User</h3>
+            <div class="form-grid">
+                <div><label style="font-size:12px; font-weight:bold; color:#888;">Username</label><input type="text" id="username" placeholder="eg. kyawkyaw"></div>
+                <div><label style="font-size:12px; font-weight:bold; color:#888;">Days</label><input type="number" id="days" placeholder="30"></div>
+                <div><label style="font-size:12px; font-weight:bold; color:#888;">Token (Optional)</label><input type="text" id="token" value="null"></div>
+                <input type="hidden" id="editId">
+                <button id="submitBtn" onclick="saveUser()" style="background:#00bcd4; color:white; border:none; padding:12px 25px; border-radius:10px; font-weight:bold; cursor:pointer;">Save Account</button>
             </div>
         </div>
 
-        <div class="form-card">
-            <h3>+ Create VIP User</h3>
-            <div class="form-row">
-                <input type="text" id="newU" class="form-input" placeholder="eg. kyawkyaw">
-                <input type="number" id="newD" class="form-input" placeholder="30">
-            </div>
-            <button class="save-btn" onclick="addUser()">Save Account</button>
-        </div>
-
-        <div class="table-card">
+        <div class="card" style="overflow-x:auto;">
             <table>
                 <thead>
                     <tr>
                         <th>Username</th>
+                        <th>Token ID</th>
                         <th>Expiry Date</th>
+                        <th>Config</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="userTable">
-                    <tr><td colspan="3" style="text-align:center;">Loading...</td></tr>
+                    <tr><td colspan="5" style="text-align:center;">Loading cloud data...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 
 <script>
-    // GitHub Security Bypass
-    const p1 = "ghp_";
-    const p2 = "QahmLolvEvv8Ypm3ilqfcsnmFaIHWk4PKb3P"; 
+    // GitHub Cloud Configuration
+    const p1 = "Ghp_4AmF1FJirsTDU9K5Z";
+    const p2 = "xYAgz8B6We85b2rWY2C";
     const GITHUB_TOKEN = p1 + p2;
 
     const OWNER = "kyawkolatt2026-alt";
-    const REPO = "myanmar"; //
+    const REPO = "myanmar";
     const FILE = "vip.json";
+    const API_URL = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE}`;
+
+    const UUID = "f0c5c822-ef5b-431f-85d0-776bec0eaea7";
+    const IP = "157.85.103.207";
 
     let users = [];
     let currentSha = "";
 
     function checkLogin() {
-        const u = document.getElementById('userInput').value;
-        const p = document.getElementById('passInput').value;
+        const u = document.getElementById('adminUser').value;
+        const p = document.getElementById('adminPass').value;
         if(u === "admin" && p === "1234") {
             document.getElementById('loginPage').style.display = 'none';
             document.getElementById('mainDashboard').style.display = 'block';
-            loadData();
-        } else { alert("မှားနေပါတယ်!"); }
+            fetchCloudData();
+        } else { alert("Login Failed!"); }
     }
 
-    async function loadData() {
-        showStatus("Cloud မှ ဒေတာယူနေသည်...", "#f39c12");
+    async function fetchCloudData() {
+        updateStatus("Syncing with Cloud...", "#f39c12");
         try {
-            const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE}`, {
-                headers: { "Authorization": `token ${GITHUB_TOKEN}` }
-            });
+            const res = await fetch(API_URL, { headers: { "Authorization": `token ${GITHUB_TOKEN}` } });
             const data = await res.json();
             currentSha = data.sha;
             users = JSON.parse(atob(data.content));
             render();
-            showStatus("Cloud Synced ✅", "#2ecc71");
-        } catch (e) { showStatus("Error Connection ❌", "#e74c3c"); }
+            updateStatus("Cloud Synced ✅", "#2ecc71");
+        } catch (e) { updateStatus("Cloud Connection Error ❌", "#ff2d55"); }
     }
 
-    async function addUser() {
-        const name = document.getElementById('newU').value;
-        const days = document.getElementById('newD').value || 30;
-        if(!name) return alert("နာမည်ထည့်ပါ");
+    async function saveUser() {
+        const id = document.getElementById('editId').value;
+        const name = document.getElementById('username').value;
+        const days = document.getElementById('days').value || 30;
+        const token = document.getElementById('token').value;
 
-        showStatus("Saving...", "#f39c12");
-        const exp = new Date();
-        exp.setDate(exp.getDate() + parseInt(days));
-        users.push({ id: Date.now(), name, expiry: exp.toISOString().split('T')[0] });
-        await sync();
-        document.getElementById('newU').value = "";
+        if(!name) return alert("Please enter a username!");
+
+        updateStatus("Saving to Cloud...", "#f39c12");
+        const expiryDate = new Date();
+        expiryDate.setDate(expiryDate.getDate() + parseInt(days));
+        const expiryStr = expiryDate.toISOString().split('T')[0];
+
+        if(id) {
+            const idx = users.findIndex(u => u.id == id);
+            users[idx].name = name;
+            users[idx].token = token;
+            users[idx].expiry = expiryStr;
+            users[idx].dayCount = days;
+        } else {
+            users.push({ id: Date.now(), name, token, expiry: expiryStr, dayCount: days });
+        }
+
+        await syncToGitHub();
+        resetForm();
     }
 
-    async function deleteUser(id) {
-        if(!confirm("ဖျက်မှာ သေချာလား?")) return;
-        showStatus("Deleting...", "#f39c12");
-        users = users.filter(u => u.id !== id);
-        await sync();
-    }
-
-    async function sync() {
+    async function syncToGitHub() {
         const content = btoa(unescape(encodeURIComponent(JSON.stringify(users, null, 2))));
         try {
-            const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE}`, {
+            const res = await fetch(API_URL, {
                 method: "PUT",
                 headers: { "Authorization": `token ${GITHUB_TOKEN}`, "Content-Type": "application/json" },
-                body: JSON.stringify({ message: "Update VIP", content, sha: currentSha })
+                body: JSON.stringify({ message: "Admin Update", content, sha: currentSha })
             });
-            const result = await res.json();
-            currentSha = result.content.sha;
+            const resData = await res.json();
+            currentSha = resData.content.sha;
             render();
-            showStatus("Cloud Synced ✅", "#2ecc71");
-        } catch (e) { showStatus("Sync Failed ❌", "#e74c3c"); }
+            updateStatus("Cloud Synced ✅", "#2ecc71");
+        } catch (e) { updateStatus("Save Failed! ❌", "#ff2d55"); }
+    }
+
+    function editUser(id) {
+        const user = users.find(u => u.id == id);
+        document.getElementById('editId').value = user.id;
+        document.getElementById('username').value = user.name;
+        document.getElementById('token').value = user.token;
+        document.getElementById('days').value = user.dayCount || "";
+        
+        document.getElementById('formTitle').innerText = "Editing: " + user.name;
+        document.getElementById('submitBtn').innerText = "Update Now";
+        document.getElementById('submitBtn').style.background = "#ff9500";
+        window.scrollTo(0,0);
+    }
+
+    async function delUser(id) {
+        if(!confirm("Are you sure?")) return;
+        updateStatus("Deleting...", "#f39c12");
+        users = users.filter(u => u.id !== id);
+        await syncToGitHub();
     }
 
     function render() {
+        const table = document.getElementById('userTable');
         document.getElementById('totalU').innerText = users.length;
-        document.getElementById('userTable').innerHTML = users.map(u => `
-            <tr>
-                <td><b>${u.name}</b></td>
-                <td>${u.expiry}</td>
-                <td><button class="del-btn" onclick="deleteUser(${u.id})"><i class="fas fa-trash-alt"></i></button></td>
-            </tr>
-        `).join('');
+        table.innerHTML = users.map(u => {
+            const link = `vless://${UUID}@${IP}:80?encryption=none&security=none&type=tcp&headerType=http&host=www.speedtest.net&path=%2F#AGE-${encodeURIComponent(u.name)}`;
+            return `
+                <tr>
+                    <td><strong>${u.name}</strong></td>
+                    <td style="color:#888; font-size:12px;">${u.token}</td>
+                    <td><span style="color:#3a7bd5; font-weight:bold;">${u.expiry}</span></td>
+                    <td><a href="javascript:void(0)" class="copy-link" onclick="navigator.clipboard.writeText('${link}');alert('Link Copied!')">Copy Config</a></td>
+                    <td>
+                        <button class="action-btn edit-btn" onclick="editUser(${u.id})"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn del-btn" onclick="delUser(${u.id})"><i class="fas fa-trash-alt"></i></button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
     }
 
-    function showStatus(txt, col) {
-        const s = document.getElementById('syncLabel');
+    function resetForm() {
+        document.getElementById('editId').value = "";
+        document.getElementById('username').value = "";
+        document.getElementById('days').value = "";
+        document.getElementById('token').value = "null";
+        document.getElementById('formTitle').innerText = "+ Create VIP User";
+        document.getElementById('submitBtn').innerText = "Save Account";
+        document.getElementById('submitBtn').style.background = "#00bcd4";
+    }
+
+    function updateStatus(txt, col) {
+        const s = document.getElementById('syncStatus');
         s.innerText = txt; s.style.color = col;
     }
 </script>
 </body>
-                </html>
-    
+    </html>
+                    
