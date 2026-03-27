@@ -10,43 +10,39 @@
         .card { border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .btn-custom { background-color: #00bcd4; color: white; border-radius: 10px; padding: 10px; }
         .btn-custom:hover { background-color: #0097a7; color: white; }
+        .btn-logout { background-color: #ff4081; color: white; border-radius: 8px; font-size: 0.8rem; border: none; padding: 5px 15px; }
         .status-badge { font-size: 0.8rem; padding: 5px 10px; border-radius: 20px; }
     </style>
 </head>
 <body>
 
 <div class="container py-4">
-    <div class="text-center mb-4">
-        <h2>AGE VPN Admin</h2>
-        <span class="status-badge bg-success text-white">● Connected</span>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">AGE VPN Admin</h2>
+            <span class="status-badge bg-success text-white">● Connected</span>
+        </div>
+        <button onclick="logout()" class="btn-logout">Logout</button>
     </div>
 
     <div class="row g-3 mb-4 text-center text-white">
         <div class="col-4">
-            <div class="p-3 rounded-4" style="background: #00b0ff;">
-                <small>CLIENTS</small><br><strong id="clientCount">0</strong>
-            </div>
+            <div class="p-3 rounded-4" style="background: #00b0ff;"><small>CLIENTS</small><br><strong id="clientCount">0</strong></div>
         </div>
         <div class="col-4">
-            <div class="p-3 rounded-4" style="background: #ff4081;">
-                <small>LIMIT</small><br><strong>1 Device</strong>
-            </div>
+            <div class="p-3 rounded-4" style="background: #ff4081;"><small>LIMIT</small><br><strong>1 Device</strong></div>
         </div>
         <div class="col-4">
-            <div class="p-3 rounded-4" style="background: #ffa000;">
-                <small>SERVER IP</small><br><small>157.85.103.207</small>
-            </div>
+            <div class="p-3 rounded-4" style="background: #ffa000;"><small>SERVER IP</small><br><small>157.85.103.207</small></div>
         </div>
     </div>
 
     <div class="card p-4 mb-4">
         <h5 class="mb-3 text-primary border-start border-4 border-primary ps-2">Create VIP Account</h5>
-        
         <div class="mb-3">
             <label class="form-label">USERNAME</label>
             <input type="text" id="username" class="form-control" placeholder="eg. kyawkyaw">
         </div>
-
         <div class="row mb-3">
             <div class="col-6">
                 <label class="form-label">VALID DAYS</label>
@@ -54,28 +50,31 @@
             </div>
             <div class="col-6">
                 <label class="form-label">DATA LIMIT (GB)</label>
-                <input type="number" id="gbLimit" class="form-control" placeholder="eg. 50" value="50">
+                <input type="number" id="gbLimit" class="form-control" value="50">
             </div>
         </div>
-
         <div class="mb-3">
             <label class="form-label">TOKEN ID (UUID)</label>
-            <input type="text" id="tokenId" class="form-control" placeholder="Leave empty for auto-gen">
+            <input type="text" id="tokenId" class="form-control" placeholder="null">
         </div>
-
         <button onclick="saveUser()" id="saveBtn" class="btn btn-custom w-100 fw-bold">Save Now</button>
     </div>
 
     <div class="card p-3">
         <h6 class="text-muted mb-3">CLIENT LIST</h6>
-        <div id="userList" class="list-group list-group-flush">
-            </div>
+        <div id="userList" class="list-group list-group-flush"></div>
     </div>
 </div>
 
 <script>
-    // Cloudflare Worker URL (သင့် URL သေချာအောင် ပြန်စစ်ပါ)
+    // သင့်ရဲ့ အရင် Worker Link ကို ပြန်ထည့်ပေးထားပါတယ်
     const API_URL = "https://jolly-mouse-e734.kyawkolatt2026-alt.workers.dev";
+
+    function logout() {
+        if(confirm("Logout လုပ်မှာ သေချာပါသလား?")) {
+            window.location.href = "login.html"; 
+        }
+    }
 
     async function fetchUsers() {
         try {
@@ -83,17 +82,20 @@
             const data = await res.json();
             const users = JSON.parse(atob(data.content));
             displayUsers(users);
-            return data.sha;
-        } catch (err) { console.error("Fetch Error:", err); }
+        } catch (err) { 
+            console.error("Fetch Error:", err);
+            document.getElementById('userList').innerHTML = "Error loading users...";
+        }
     }
 
     function displayUsers(users) {
         const list = document.getElementById('userList');
         document.getElementById('clientCount').innerText = users.length;
-        list.innerHTML = users.map(u => `
+        list.innerHTML = users.reverse().map(u => `
             <div class="list-group-item py-3">
-                <div class="fw-bold">${u.name}</div>
-                <div class="small text-muted">ID: ${u.token} | Expiry: ${u.expiry} | Data: ${u.gbLimit || 50} GB</div>
+                <div class="fw-bold">${u.name.toUpperCase()}</div>
+                <div class="small text-muted">ID: ${u.token}</div>
+                <div class="small text-muted">Expiry: ${u.expiry} | Data: ${u.gbLimit || 50} GB</div>
             </div>
         `).join('');
     }
@@ -105,34 +107,29 @@
         let token = document.getElementById('tokenId').value;
         const saveBtn = document.getElementById('saveBtn');
 
-        if (!name) return alert("Please enter a username");
+        if (!name) return alert("Username ထည့်ပေးပါ");
         if (!token || token === "null") token = crypto.randomUUID();
 
         saveBtn.disabled = true;
-        saveBtn.innerText = "Syncing with X-UI...";
+        saveBtn.innerText = "Syncing...";
 
         try {
-            // Get current file to get SHA
             const res = await fetch(API_URL);
             const fileData = await res.json();
             let users = JSON.parse(atob(fileData.content));
 
-            // Calculate Expiry Date
             const expiry = new Date();
             expiry.setDate(expiry.getDate() + parseInt(days));
-            const expiryStr = expiry.toISOString().split('T')[0];
-
-            // Add New User
+            
             users.push({
                 id: Date.now(),
                 name: name,
                 token: token,
-                expiry: expiryStr,
+                expiry: expiry.toISOString().split('T')[0],
                 dayCount: days,
-                gbLimit: gbLimit // Worker က ဒီတန်ဖိုးကို ယူသုံးပါလိမ့်မယ်
+                gbLimit: gbLimit
             });
 
-            // Update GitHub via Worker
             const updateRes = await fetch(API_URL, {
                 method: "PUT",
                 body: JSON.stringify({
@@ -142,23 +139,13 @@
             });
 
             if (updateRes.ok) {
-                alert("User successfully added to GitHub and X-UI!");
+                alert("Saved Successfully!");
                 location.reload();
-            } else {
-                alert("Failed to save. Check Worker logs.");
-            }
-        } catch (err) {
-            console.error("Save Error:", err);
-            alert("Error: " + err.message);
-        } finally {
-            saveBtn.disabled = false;
-            saveBtn.innerText = "Save Now";
-        }
+            } else { alert("Save Failed!"); }
+        } catch (err) { alert("Error: " + err.message); }
+        finally { saveBtn.disabled = false; saveBtn.innerText = "Save Now"; }
     }
-
-    // Initial Load
     fetchUsers();
 </script>
-
 </body>
 </html>
