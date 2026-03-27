@@ -3,78 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AGE VPN - Professional Panel</title>
+    <title>AGE VPN - Ultimate Control</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #3a7bd5; --danger: #ff2d55; --bg: #f4f7f9; }
-        * { box-sizing: border-box; font-family: 'Segoe UI', 'Pyidaungsu', sans-serif; }
-        body { margin: 0; background: var(--bg); color: #333; }
-        .header { background: white; padding: 15px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .logo-img { width: 50px; height: 50px; border-radius: 12px; margin-bottom: 5px; }
+        :root { --primary: #3a7bd5; --secondary: #00d2ff; --bg: #f8f9fa; --danger: #ff2d55; --success: #4caf50; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { margin: 0; background: var(--bg); color: #333; padding-bottom: 50px; }
+
+        /* Header & Navigation */
+        .header { background: white; padding: 15px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
+        .nav-tabs { display: flex; justify-content: center; gap: 20px; margin-top: 10px; }
+        .nav-item { cursor: pointer; font-size: 14px; font-weight: bold; color: #888; padding: 5px 10px; }
+        .nav-item.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
+
+        /* Container & Cards */
         .container { width: 95%; max-width: 500px; margin: 20px auto; }
-        .card { background: white; padding: 20px; border-radius: 18px; box-shadow: 0 5px 20px rgba(0,0,0,0.03); margin-bottom: 20px; }
-        h3 { margin: 0 0 15px 0; font-size: 17px; color: var(--primary); display: flex; align-items: center; gap: 8px; }
-        .input-group { margin-bottom: 12px; }
-        .input-group label { display: block; font-size: 11px; font-weight: bold; color: #999; margin-bottom: 4px; }
-        .input-group input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #eee; outline: none; background: #fdfdfd; }
-        .btn-main { width: 100%; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 20px; }
         
-        .user-item { padding: 15px; border-bottom: 1px solid #f8f8f8; }
-        .user-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-        .user-name { font-weight: bold; font-size: 15px; }
-        .progress-bg { width: 100%; height: 6px; background: #eee; border-radius: 10px; margin: 8px 0; overflow: hidden; }
+        /* Form Elements */
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 11px; font-weight: bold; color: #999; margin-bottom: 5px; text-transform: uppercase; }
+        .input-group input, .input-group select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #eee; outline: none; background: #fdfdfd; font-size: 15px; }
+        
+        .btn { width: 100%; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-copy { background: #e3f2fd; color: var(--primary); font-size: 12px; padding: 8px; }
+
+        /* User List */
+        .user-item { border-bottom: 1px solid #f5f5f5; padding: 15px 0; }
+        .user-top { display: flex; justify-content: space-between; align-items: flex-start; }
+        .progress-container { width: 100%; background: #eee; height: 8px; border-radius: 10px; margin: 10px 0; overflow: hidden; }
         .progress-bar { height: 100%; transition: 0.5s; }
-        .expiry-row { display: flex; justify-content: space-between; font-size: 11px; color: #777; }
-        .action-row { margin-top: 10px; display: flex; gap: 15px; font-size: 13px; }
-        .action-row span { cursor: pointer; color: #666; }
-        #loginPage { position: fixed; inset: 0; background: white; z-index: 10000; display: flex; justify-content: center; align-items: center; }
+
+        /* Login & Settings */
+        #loginPage { position: fixed; inset: 0; background: linear-gradient(135deg, var(--primary), var(--secondary)); z-index: 1000; display: flex; justify-content: center; align-items: center; }
     </style>
 </head>
 <body>
 
     <div id="loginPage">
-        <div class="card" style="width:300px; text-align:center;">
-            <img src="Myanmar_VPN.png" class="logo-img">
-            <h3>Admin Login</h3>
-            <input type="password" id="loginPass" style="width:100%; padding:10px; margin-bottom:15px; border-radius:8px; border:1px solid #ddd;" placeholder="Password">
-            <button class="btn-main" onclick="checkLogin()">Enter Panel</button>
+        <div class="card" style="width: 320px; text-align: center;">
+            <img src="Myanmar_VPN.png" style="width:70px; border-radius:15px; margin-bottom:10px;">
+            <h3>Admin Access</h3>
+            <div class="input-group"><input type="password" id="admPass" placeholder="Enter Password"></div>
+            <button class="btn btn-primary" onclick="login()">Unlock Panel</button>
         </div>
     </div>
 
     <div class="header">
-        <img src="Myanmar_VPN.png" class="logo-img">
-        <h2 style="margin:0; font-size: 18px; color:var(--primary);">AGE VPN - VIP MANAGER</h2>
+        <img src="Myanmar_VPN.png" style="width: 40px; border-radius: 10px;">
+        <div class="nav-tabs">
+            <div class="nav-item active" onclick="switchTab('users')">USERS</div>
+            <div class="nav-item" onclick="switchTab('xui')">X-UI API</div>
+            <div class="nav-item" onclick="switchTab('settings')">SETTINGS</div>
+        </div>
     </div>
 
-    <div class="container" id="panelUI" style="display:none;">
-        <div class="card">
-            <h3 id="formTitle"><i class="fas fa-edit"></i> Create/Edit User</h3>
-            <div class="input-group"><label>Username</label><input type="text" id="uName"></div>
-            <div style="display:flex; gap:10px;">
-                <div class="input-group" style="flex:1;"><label>Days</label><input type="number" id="uDays" value="30"></div>
-                <div class="input-group" style="flex:1;"><label>Limit (GB)</label><input type="number" id="uLimit" value="50"></div>
+    <div class="container">
+        
+        <div id="tab-users">
+            <div class="card">
+                <h3 id="fTitle">+ New Client</h3>
+                <div class="input-group"><label>User Remark</label><input type="text" id="uName" placeholder="eg. Myanmar-VIP"></div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <div class="input-group"><label>Days</label><input type="number" id="uDays" value="30"></div>
+                    <div class="input-group"><label>Limit (GB)</label><input type="number" id="uLimit" value="50"></div>
+                </div>
+                <input type="hidden" id="editId">
+                <button class="btn btn-primary" id="saveBtn" onclick="saveUser()">Create & Push to Server</button>
             </div>
-            <input type="hidden" id="editId">
-            <button class="btn-main" id="btnSave" onclick="saveUser()">Save User & Sync Cloud</button>
+
+            <div class="card">
+                <h3>Active Clients</h3>
+                <div id="userList"></div>
+            </div>
         </div>
 
-        <div class="card" style="padding:10px 0;">
-            <h3 style="padding:0 20px;">Active Users</h3>
-            <div id="userList"></div>
+        <div id="tab-xui" style="display:none;">
+            <div class="card">
+                <h3><i class="fas fa-server"></i> Server Integration</h3>
+                <div class="input-group"><label>X-UI Address</label><input type="text" id="xHost" value="http://157.85.103.207:2053"></div>
+                <div class="input-group"><label>X-UI Username</label><input type="text" id="xUser"></div>
+                <div class="input-group"><label>X-UI Password</label><input type="password" id="xPass"></div>
+                <div class="input-group"><label>Inbound ID</label><input type="number" id="xInbound" value="6"></div>
+                <p style="font-size: 11px; color: #666;">*Data Limit ပြည့်ပါက X-UI မှတဆင့် အင်တာနက် အလိုအလျောက်ဖြတ်ပါမည်။</p>
+                <button class="btn btn-primary" onclick="saveXUI()">Save API Config</button>
+            </div>
         </div>
+
+        <div id="tab-settings" style="display:none;">
+            <div class="card">
+                <h3><i class="fas fa-cog"></i> Panel Settings</h3>
+                <div class="input-group"><label>Current Password</label><input type="password" id="currPass"></div>
+                <div class="input-group"><label>New Password</label><input type="password" id="newPass"></div>
+                <button class="btn btn-primary" onclick="changePanelPass()">Update Panel Password</button>
+                <button class="btn" style="background:#eee;" onclick="location.reload()">Logout</button>
+            </div>
+        </div>
+
     </div>
 
 <script>
     const API = "https://jolly-mouse-e734.kyawkolatt2026.workers.dev";
     let users = [];
     let currentSha = "";
+    let panelPass = localStorage.getItem('panel_p') || "1234";
 
-    function checkLogin() {
-        if(document.getElementById('loginPass').value === "1234") {
+    function login() {
+        if(document.getElementById('admPass').value === panelPass) {
             document.getElementById('loginPage').style.display = 'none';
-            document.getElementById('panelUI').style.display = 'block';
             loadData();
-        } else { alert("မှားနေသည်!"); }
+        } else { alert("Wrong Password!"); }
+    }
+
+    function switchTab(tab) {
+        ['users', 'xui', 'settings'].forEach(t => document.getElementById('tab-'+t).style.display = 'none');
+        document.getElementById('tab-'+tab).style.display = 'block';
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        event.target.classList.add('active');
     }
 
     async function loadData() {
@@ -84,28 +130,34 @@
             currentSha = d.sha;
             users = JSON.parse(atob(d.content)) || [];
             render();
-        } catch (e) { console.log("New database will be created"); }
+        } catch (e) { console.log("Init..."); }
     }
 
     function render() {
-        const div = document.getElementById('userList');
-        div.innerHTML = users.map(u => {
-            const total = u.totalDays || 30;
-            const left = Math.ceil((new Date(u.expiry) - new Date()) / 86400000);
-            const perc = Math.max(0, Math.min(100, (left / total) * 100));
-            const color = perc < 20 ? "#ff2d55" : (perc < 50 ? "#ff9500" : "#4caf50");
+        const list = document.getElementById('userList');
+        list.innerHTML = users.map(u => {
+            const daysLeft = Math.ceil((new Date(u.expiry) - new Date()) / 86400000);
+            const prog = Math.max(0, Math.min(100, (daysLeft / (u.totalDays || 30)) * 100));
+            const configLink = `vless://f0c5c822-ef5b-4124-b510-5a7e8023e2d0@157.85.103.207:80?path=%2F&security=none&encryption=none&type=tcp&headerType=http#${u.name}`;
 
             return `
                 <div class="user-item">
-                    <div class="user-info">
-                        <span class="user-name">${u.name}</span>
-                        <span style="font-size:12px; font-weight:bold;">${u.limit} GB</span>
+                    <div class="user-top">
+                        <div>
+                            <b class="user-name">${u.name}</b><br>
+                            <span style="font-size:11px; color:#888;">Limit: ${u.limit} GB</span>
+                        </div>
+                        <div style="text-align:right;">
+                            <span style="font-size:12px; font-weight:bold; color:${prog < 20 ? 'red' : 'green'}">${daysLeft} days left</span>
+                        </div>
                     </div>
-                    <div class="progress-bg"><div class="progress-bar" style="width:${perc}%; background:${color};"></div></div>
-                    <div class="expiry-row"><span>${u.expiry}</span> <b>${left > 0 ? left : 0} days left</b></div>
-                    <div class="action-row">
-                        <span onclick="editUser(${u.id})"><i class="fas fa-edit"></i> Edit</span>
-                        <span onclick="delUser(${u.id})" style="color:red;"><i class="fas fa-trash"></i> Delete</span>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width:${prog}%; background:${prog < 20 ? 'red' : '#3a7bd5'};"></div>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn btn-copy" onclick="copyConfig('${configLink}')"><i class="fas fa-copy"></i> Copy V2Ray</button>
+                        <button class="btn btn-copy" style="background:#fff3e0; color:#ef6c00;" onclick="editUser(${u.id})"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="btn btn-copy" style="background:#ffebee; color:red;" onclick="delUser(${u.id})"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>
             `;
@@ -118,40 +170,17 @@
         const days = parseInt(document.getElementById('uDays').value);
         const limit = document.getElementById('uLimit').value;
 
-        if(!name) return alert("အမည်ထည့်ပါ");
+        if(!name) return;
 
         if(id) {
-            const idx = users.findIndex(x => x.id == id);
-            if(idx !== -1) {
-                users[idx].name = name;
-                users[idx].limit = limit;
-                // ရက်တိုးချင်ရင် အောက်က line ကို သုံးပါ
-                // const ex = new Date(); ex.setDate(ex.getDate() + days); users[idx].expiry = ex.toISOString().split('T')[0];
-            }
+            const i = users.findIndex(x => x.id == id);
+            users[i].name = name; users[i].limit = limit;
         } else {
             const ex = new Date(); ex.setDate(ex.getDate() + days);
             users.push({ id: Date.now(), name, limit, expiry: ex.toISOString().split('T')[0], totalDays: days });
         }
         await sync();
         reset();
-    }
-
-    async function delUser(id) {
-        if(confirm("ဖျက်မှာလား?")) {
-            users = users.filter(x => x.id != id); // id တူတာကို အကုန်ဖျက်မယ်
-            await sync();
-        }
-    }
-
-    function editUser(id) {
-        const u = users.find(x => x.id == id);
-        if(!u) return;
-        document.getElementById('editId').value = u.id;
-        document.getElementById('uName').value = u.name;
-        document.getElementById('uLimit').value = u.limit;
-        document.getElementById('uDays').value = u.totalDays || 30;
-        document.getElementById('formTitle').innerText = "Editing: " + u.name;
-        window.scrollTo(0,0);
     }
 
     async function sync() {
@@ -166,11 +195,38 @@
         render();
     }
 
+    function copyConfig(link) {
+        navigator.clipboard.writeText(link);
+        alert("V2Ray Config Copied!");
+    }
+
+    function editUser(id) {
+        const u = users.find(x => x.id == id);
+        document.getElementById('editId').value = u.id;
+        document.getElementById('uName').value = u.name;
+        document.getElementById('uLimit').value = u.limit;
+        document.getElementById('fTitle').innerText = "Edit User";
+        window.scrollTo(0,0);
+    }
+
+    function changePanelPass() {
+        const cp = document.getElementById('currPass').value;
+        const np = document.getElementById('newPass').value;
+        if(cp === panelPass && np.length > 3) {
+            localStorage.setItem('panel_p', np);
+            alert("Password Changed! Please login again.");
+            location.reload();
+        } else { alert("Error!"); }
+    }
+
     function reset() {
         document.getElementById('editId').value = "";
         document.getElementById('uName').value = "";
-        document.getElementById('formTitle').innerText = "Create/Edit User";
+        document.getElementById('fTitle').innerText = "+ New Client";
     }
+
+    async function delUser(id) { if(confirm("Delete?")) { users = users.filter(x => x.id != id); await sync(); } }
 </script>
 </body>
-</html>
+    </html>
+    
