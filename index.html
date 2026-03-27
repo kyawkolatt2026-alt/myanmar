@@ -3,63 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AGE VPN Premium Panel</title>
+    <title>AGE VPN Premium</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --bg: #0f0c29; --grad: linear-gradient(135deg, #0f0c29, #302b63, #24243e); --accent: #00d2ff; }
-        body { background: var(--grad); color: white; font-family: 'Segoe UI', sans-serif; min-height: 100vh; margin: 0; padding-bottom: 50px; }
-        .glass-card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
-        .btn-vpn { background: linear-gradient(to right, #00d2ff, #3a7bd5); border: none; color: white; border-radius: 12px; font-weight: bold; padding: 12px; transition: 0.3s; }
-        .btn-vpn:active { transform: scale(0.95); }
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 8px; }
-        .online { background: #00ff88; box-shadow: 0 0 10px #00ff88; }
-        .offline { background: #ff4b2b; }
-        .progress { height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; margin: 10px 0; }
-        .progress-bar { background: var(--accent); border-radius: 10px; transition: width 0.5s ease; }
-        input.form-control { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 10px; }
-        input.form-control:focus { background: rgba(255,255,255,0.1); color: white; border-color: var(--accent); box-shadow: none; }
-        .client-item { background: rgba(255,255,255,0.03); border-radius: 15px; padding: 15px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05); }
+        :root { --bg: #1a1a2e; --card: #16213e; --accent: #0f3460; --text: #e94560; }
+        body { background-color: var(--bg); color: white; font-family: sans-serif; }
+        .glass-card { background: var(--card); border-radius: 15px; border: 1px solid var(--accent); padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .btn-vpn { background: var(--text); border: none; color: white; border-radius: 10px; font-weight: bold; }
+        .form-control { background: #0f3460; border: none; color: white; border-radius: 8px; }
+        .form-control:focus { background: #0f3460; color: white; box-shadow: 0 0 5px var(--text); }
     </style>
 </head>
 <body>
 
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="fw-bold mb-0"><i class="fas fa-shield-alt text-info me-2"></i>AGE VPN</h4>
-        <button onclick="logout()" class="btn btn-sm btn-danger px-3 rounded-pill"><i class="fas fa-power-off me-1"></i> Logout</button>
+        <h4 class="fw-bold"><i class="fas fa-shield-alt text-info me-2"></i>AGE VPN</h4>
+        <button onclick="logout()" class="btn btn-sm btn-danger rounded-pill">Logout</button>
     </div>
 
-    <div class="glass-card p-4 mb-4">
-        <h6 id="formTitle" class="text-info small fw-bold mb-3"><i class="fas fa-plus-circle me-1"></i> CREATE NEW CLIENT</h6>
+    <div class="glass-card mb-4">
+        <h6 class="small fw-bold mb-3 text-info">CREATE NEW CLIENT</h6>
         <input type="hidden" id="editId">
-        <div class="mb-3">
-            <label class="small text-white-50 fw-bold mb-1">CLIENT NAME</label>
-            <input type="text" id="username" class="form-control" placeholder="Enter username...">
+        <input type="text" id="username" class="form-control mb-3" placeholder="Client Name">
+        <div class="row g-2 mb-3">
+            <div class="col-6"><input type="number" id="days" class="form-control" value="30" placeholder="Days"></div>
+            <div class="col-6"><input type="number" id="gb" class="form-control" value="50" placeholder="GB Limit"></div>
         </div>
-        <div class="row g-3 mb-3">
-            <div class="col-6">
-                <label class="small text-white-50 fw-bold mb-1">EXPIRED DAYS</label>
-                <input type="number" id="days" class="form-control" value="30">
-            </div>
-            <div class="col-6">
-                <label class="small text-white-50 fw-bold mb-1">DATA LIMIT (GB)</label>
-                <input type="number" id="gb" class="form-control" value="50">
-            </div>
-        </div>
-        <button onclick="saveUser()" id="saveBtn" class="btn btn-vpn w-100">SAVE CONNECTION</button>
-        <button onclick="resetForm()" id="cancelBtn" class="btn btn-link btn-sm w-100 text-white-50 mt-2 d-none">Cancel Edit</button>
+        <button onclick="saveUser()" id="saveBtn" class="btn btn-vpn w-100 py-2">Save Now</button>
     </div>
 
-    <div class="glass-card p-3">
-        <h6 class="small fw-bold mb-3"><i class="fas fa-users me-1"></i> CLIENT LIST</h6>
-        <div id="userList">
-            <div class="text-center py-4"><div class="spinner-border spinner-border-sm text-info"></div></div>
-        </div>
+    <div class="glass-card">
+        <h6 class="small fw-bold mb-3 text-info">CLIENT LIST</h6>
+        <div id="userList"><div class="text-center py-3"><div class="spinner-border text-info"></div></div></div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     // Screenshot ပါ Domain အတိုင်း အတိအကျ ပြင်ဆင်ထားသည်
     const API_URL = "https://jolly-mouse-e734.kyawkolatt2026-alt.workers.dev";
@@ -68,51 +48,30 @@
     async function fetchUsers() {
         try {
             const res = await fetch(API_URL);
-            if (!res.ok) throw new Error('HTTP Error: ' + res.status);
+            if (!res.ok) throw new Error('Worker Error: ' + res.status);
             const data = await res.json();
-            
-            // GitHub မှလာသော Base64 ကို decode လုပ်ခြင်း
             allUsers = JSON.parse(atob(data.content));
             renderUsers();
-        } catch (e) { 
-            console.error(e);
-            document.getElementById('userList').innerHTML = `<div class='text-center text-danger py-3 small'><i class='fas fa-exclamation-circle'></i> Loading Error: ${e.message}</div>`; 
+        } catch (e) {
+            document.getElementById('userList').innerHTML = `<div class='text-center text-danger small'>Loading Error: ${e.message}</div>`;
         }
     }
 
     function renderUsers() {
         const list = document.getElementById('userList');
-        if (allUsers.length === 0) { 
-            list.innerHTML = "<div class='text-center text-white-50 py-3'>No clients yet.</div>"; 
-            return; 
-        }
-        
-        list.innerHTML = allUsers.slice().reverse().map(u => {
-            const expiry = new Date(u.expiry);
-            const today = new Date();
-            const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
-            const percent = Math.max(0, Math.min(100, (diffDays / (u.dayCount || 30)) * 100));
-            const statusClass = diffDays > 0 ? 'online' : 'offline';
-
-            return `
-                <div class="client-item">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <div class="fw-bold"><span class="status-dot ${statusClass}"></span>${u.name.toUpperCase()}</div>
-                        <div class="dropdown">
-                            <button class="btn btn-link text-white btn-sm p-0" data-bs-toggle="dropdown"><i class="fas fa-ellipsis-h"></i></button>
-                            <ul class="dropdown-menu dropdown-menu-dark">
-                                <li><a class="dropdown-item" href="#" onclick="editUser('${u.id}')"><i class="fas fa-edit me-2"></i> Edit</a></li>
-                                <li><a class="dropdown-item text-danger" href="#" onclick="deleteUser('${u.id}')"><i class="fas fa-trash me-2"></i> Delete</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="progress"><div class="progress-bar" style="width: ${percent}%"></div></div>
-                    <div class="d-flex justify-content-between text-white-50" style="font-size: 11px;">
-                        <span><i class="fas fa-database me-1"></i>${u.gbLimit || 50}GB</span>
-                        <span><i class="fas fa-clock me-1"></i>${diffDays > 0 ? diffDays + ' days left' : 'Expired'}</span>
-                    </div>
-                </div>`;
-        }).join('');
+        if (allUsers.length === 0) { list.innerHTML = "<div class='text-center py-3 opacity-50'>No users found.</div>"; return; }
+        list.innerHTML = allUsers.slice().reverse().map(u => `
+            <div class="p-2 mb-2 rounded border border-secondary d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="fw-bold text-uppercase" style="font-size: 0.9rem;">${u.name}</div>
+                    <div style="font-size: 0.7rem;" class="text-info">${u.gbLimit || 50}GB | ${u.expiry}</div>
+                </div>
+                <div>
+                    <button class="btn btn-sm text-info" onclick="editUser('${u.id}')"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm text-danger" onclick="deleteUser('${u.id}')"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+        `).join('');
     }
 
     async function saveUser() {
@@ -120,77 +79,55 @@
         const days = document.getElementById('days').value;
         const gb = document.getElementById('gb').value;
         const editId = document.getElementById('editId').value;
-        if(!name) return alert("Please enter name");
+        if(!name) return alert("Enter name!");
 
-        const btn = document.getElementById('saveBtn');
-        btn.disabled = true; btn.innerText = "Syncing...";
+        document.getElementById('saveBtn').disabled = true;
+        document.getElementById('saveBtn').innerText = "Syncing..."; //
 
         try {
             const res = await fetch(API_URL);
             const fileData = await res.json();
             let users = JSON.parse(atob(fileData.content));
-            const expiryDate = new Date();
-            expiryDate.setDate(expiryDate.getDate() + parseInt(days));
+            const expiry = new Date();
+            expiry.setDate(expiry.getDate() + parseInt(days));
 
             if(editId) {
                 const idx = users.findIndex(u => u.id == editId);
-                if(idx !== -1) users[idx] = { ...users[idx], name, expiry: expiryDate.toISOString().split('T')[0], dayCount: days, gbLimit: gb };
+                users[idx] = { ...users[idx], name, expiry: expiry.toISOString().split('T')[0], dayCount: days, gbLimit: gb };
             } else {
-                users.push({ id: Date.now().toString(), name, token: btoa(Math.random()).substring(0,12), expiry: expiryDate.toISOString().split('T')[0], dayCount: days, gbLimit: gb });
+                users.push({ id: Date.now().toString(), name, expiry: expiry.toISOString().split('T')[0], dayCount: days, gbLimit: gb });
             }
 
-            const putRes = await fetch(API_URL, {
+            await fetch(API_URL, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ content: btoa(JSON.stringify(users, null, 2)), sha: fileData.sha })
             });
-            
-            if (!putRes.ok) throw new Error('Failed to update GitHub');
             location.reload();
-        } catch (e) { 
-            alert("Error: " + e.message); 
-            btn.disabled = false; btn.innerText = "SAVE CONNECTION";
-        }
+        } catch (e) { alert(e.message); document.getElementById('saveBtn').disabled = false; }
     }
 
     function editUser(id) {
         const u = allUsers.find(user => user.id == id);
-        if(!u) return;
         document.getElementById('editId').value = u.id;
         document.getElementById('username').value = u.name;
         document.getElementById('days').value = u.dayCount || 30;
         document.getElementById('gb').value = u.gbLimit || 50;
-        document.getElementById('formTitle').innerHTML = "<i class='fas fa-edit me-1'></i> EDIT CLIENT: " + u.name;
-        document.getElementById('cancelBtn').classList.remove('d-none');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     async function deleteUser(id) {
-        if(!confirm("Delete this user?")) return;
+        if(!confirm("Delete?")) return;
         try {
             const res = await fetch(API_URL);
             const fileData = await res.json();
             let users = JSON.parse(atob(fileData.content)).filter(u => u.id != id);
-            await fetch(API_URL, {
-                method: "PUT",
-                body: JSON.stringify({ content: btoa(JSON.stringify(users, null, 2)), sha: fileData.sha })
-            });
+            await fetch(API_URL, { method: "PUT", body: JSON.stringify({ content: btoa(JSON.stringify(users, null, 2)), sha: fileData.sha }) });
             location.reload();
         } catch (e) { alert(e.message); }
     }
 
-    function resetForm() {
-        document.getElementById('editId').value = "";
-        document.getElementById('username').value = "";
-        document.getElementById('formTitle').innerHTML = "<i class='fas fa-plus-circle me-1'></i> CREATE NEW CLIENT";
-        document.getElementById('cancelBtn').classList.add('d-none');
-    }
-
     function logout() { localStorage.removeItem("age_vpn_auth"); window.location.href = "login.html"; }
-    
-    // Auth Check
     if(localStorage.getItem("age_vpn_auth") !== "granted") window.location.href="login.html";
-    
     fetchUsers();
 </script>
 </body>
