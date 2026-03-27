@@ -9,7 +9,6 @@
         body { background-color: #f8f9fa; font-family: sans-serif; }
         .card { border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .btn-custom { background-color: #00bcd4; color: white; border-radius: 10px; padding: 10px; }
-        .btn-custom:hover { background-color: #0097a7; color: white; }
         .btn-logout { background-color: #ff4081; color: white; border-radius: 8px; font-size: 0.8rem; border: none; padding: 5px 15px; }
     </style>
 </head>
@@ -62,6 +61,7 @@
             await fetch(API_URL, { method: "PUT", body: JSON.stringify({ content: btoa(JSON.stringify(users, null, 2)), sha: fileData.sha }) });
             location.reload();
         } catch (e) { alert("Error: " + e.message); }
+        finally { saveBtn.disabled = false; }
     }
     fetchUsers();
 </script>
