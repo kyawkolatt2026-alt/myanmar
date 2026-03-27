@@ -1,1 +1,250 @@
-[{"id":1774645729528,"name":"Test","limit":"50","expiry":"2026-04-26","totalDays":30}]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGE VIP PREMIUM PANEL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@500&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fafc; margin: 0; }
+        .glass-card { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .premium-gradient { background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%); }
+        .clock-font { font-family: 'JetBrains Mono', monospace; letter-spacing: -1px; }
+        input { background: #0f172a !important; border: 1px solid #1e293b !important; color: white !important; }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <div id="login-page" class="flex items-center justify-center min-h-screen p-6">
+        <div class="glass-card p-10 rounded-[2.5rem] shadow-2xl w-full max-w-sm text-center">
+            <div class="premium-gradient w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-blue-600/40 shadow-2xl">
+                <i class="fas fa-fingerprint text-white text-4xl"></i>
+            </div>
+            <h2 class="text-3xl font-bold tracking-tight">AGE VIP</h2>
+            <div class="mt-8 space-y-4 text-left">
+                <input type="text" id="adm-user" placeholder="Username" class="w-full p-4 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="password" id="adm-pass" placeholder="Password" class="w-full p-4 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500">
+                <button onclick="handleLogin()" class="w-full premium-gradient text-white py-4 rounded-2xl font-bold text-lg mt-4 shadow-lg shadow-blue-500/25">LOG IN</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-dashboard" class="hidden">
+        <div class="p-6 flex justify-between items-center bg-slate-900/50 sticky top-0 z-40 backdrop-blur-md border-b border-white/5">
+            <div>
+                <div id="display-date" class="text-[10px] text-blue-400 font-bold uppercase tracking-tighter">LOADING...</div>
+                <div id="display-clock" class="text-2xl font-bold clock-font text-white leading-tight">00:00:00</div>
+            </div>
+            <button onclick="logout()" class="w-10 h-10 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center"><i class="fas fa-power-off"></i></button>
+        </div>
+
+        <div class="px-6 py-4">
+            <div class="premium-gradient p-6 rounded-[2rem] shadow-2xl flex justify-around text-center">
+                <div><p class="text-2xl font-bold" id="total-val">0</p><p class="text-[10px] opacity-70 font-semibold uppercase">Total</p></div>
+                <div class="w-px h-10 bg-white/20"></div>
+                <div><p class="text-2xl font-bold text-green-300" id="active-val">0</p><p class="text-[10px] opacity-70 font-semibold uppercase">Online</p></div>
+            </div>
+        </div>
+
+        <div class="px-6 mt-2 flex gap-2">
+            <input type="text" id="search" placeholder="Search Client..." class="flex-1 p-4 rounded-2xl outline-none glass-card border-none text-sm">
+            <button onclick="openAddModal()" class="w-14 h-14 premium-gradient rounded-2xl flex items-center justify-center shadow-lg"><i class="fas fa-plus text-white"></i></button>
+        </div>
+
+        <div id="user-container" class="p-6 space-y-4 pb-32"></div>
+
+        <button onclick="toggleSettings()" class="fixed bottom-8 right-8 w-16 h-16 bg-slate-800 rounded-full shadow-2xl flex items-center justify-center text-blue-400 border border-white/10 hover:rotate-90 transition-all duration-500">
+            <i class="fas fa-cog text-2xl"></i>
+        </button>
+    </div>
+
+    <div id="modal-container"></div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const GITHUB_USER = "kyawkolatt2026-alt";
+        const GITHUB_REPO = "myanmar";
+        const GITHUB_FILE = "vip.json";
+        // Token ကို ဤနေရာတွင် ထည့်ရန် (လုံခြုံရေးအရ သတိထားပါ)
+        let GITHUB_TOKEN = localStorage.getItem('gh_token') || ""; 
+
+        let users = [];
+        let ADMIN_DATA = JSON.parse(localStorage.getItem('admin_settings')) || { user: "admin", pass: "123456" };
+
+        // --- CLOCK ---
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('display-clock').innerText = now.toLocaleTimeString('en-US', { hour12: false });
+            document.getElementById('display-date').innerText = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', weekday: 'short' });
+        }
+        setInterval(updateClock, 1000);
+
+        // --- AUTH ---
+        function handleLogin() {
+            const u = document.getElementById('adm-user').value;
+            const p = document.getElementById('adm-pass').value;
+            if (u === ADMIN_DATA.user && p === ADMIN_DATA.pass) {
+                document.getElementById('login-page').classList.add('hidden');
+                document.getElementById('main-dashboard').classList.remove('hidden');
+                fetchFromGitHub();
+            } else { alert("ACCESS DENIED!"); }
+        }
+
+        // --- GITHUB API ---
+        async function fetchFromGitHub() {
+            try {
+                const res = await fetch(`https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${GITHUB_FILE}`);
+                users = await res.json();
+                renderUsers();
+            } catch (e) { console.error("Data load failed"); }
+        }
+
+        async function saveToGitHub() {
+            if (!GITHUB_TOKEN) {
+                GITHUB_TOKEN = prompt("GitHub Token ထည့်ပေးရန် လိုအပ်ပါသည်:");
+                localStorage.setItem('gh_token', GITHUB_TOKEN);
+            }
+
+            const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`;
+            
+            // Get current file SHA
+            const fileRes = await fetch(url, { headers: { Authorization: `token ${GITHUB_TOKEN}` }});
+            const fileData = await fileRes.json();
+            const sha = fileData.sha;
+
+            const content = btoa(JSON.stringify(users, null, 2));
+
+            const putRes = await fetch(url, {
+                method: "PUT",
+                headers: { Authorization: `token ${GITHUB_TOKEN}`, "Content-Type": "application/json" },
+                body: JSON.stringify({ message: "Update VIP Users", content: content, sha: sha })
+            });
+
+            if(putRes.ok) { alert("Data Saved to GitHub!"); renderUsers(); }
+            else { alert("GitHub Update Failed. Check Token."); }
+        }
+
+        // --- UI RENDER ---
+        function renderUsers() {
+            const container = document.getElementById('user-container');
+            container.innerHTML = '';
+            document.getElementById('total-val').innerText = users.length;
+            
+            users.forEach((user, index) => {
+                const isOnline = Math.random() > 0.4;
+                const diff = new Date(user.expiry) - new Date();
+                const days = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+                const progress = Math.min(100, Math.max(0, Math.round((days/30)*100)));
+
+                container.innerHTML += `
+                    <div class="glass-card p-5 rounded-[2rem] relative border-l-4 ${isOnline ? 'border-green-500' : 'border-slate-700'}">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-3 h-3 rounded-full ${isOnline ? 'bg-green-500 shadow-[0_0_10px_#10b981]' : 'bg-slate-700'}"></div>
+                                <div>
+                                    <h4 class="font-bold text-slate-100">${user.username}</h4>
+                                    <p class="text-[9px] font-bold uppercase ${isOnline ? 'text-green-500' : 'text-slate-500'} tracking-widest">${isOnline ? 'Connected' : 'Offline'}</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-1">
+                                <button onclick="copyConfig('${user.username}')" class="w-9 h-9 flex items-center justify-center text-blue-400 bg-blue-500/5 rounded-xl hover:bg-blue-500/20"><i class="fas fa-copy"></i></button>
+                                <button onclick="editUser(${index})" class="w-9 h-9 flex items-center justify-center text-amber-400 bg-amber-500/5 rounded-xl hover:bg-amber-500/20"><i class="fas fa-edit"></i></button>
+                                <button onclick="deleteUser(${index})" class="w-9 h-9 flex items-center justify-center text-rose-500 bg-rose-500/5 rounded-xl hover:bg-rose-500/20"><i class="fas fa-trash-alt"></i></button>
+                            </div>
+                        </div>
+                        <div class="flex justify-between text-[10px] text-slate-400 mb-2">
+                            <span>EXP: ${user.expiry}</span>
+                            <span class="${days < 5 ? 'text-red-400' : 'text-blue-400'}">${days} Days Left</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                            <div class="premium-gradient h-full" style="width: ${progress}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // --- MODALS ---
+        function openAddModal() {
+            document.getElementById('modal-container').innerHTML = `
+            <div class="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center p-6 z-50">
+                <div class="glass-card w-full max-w-sm rounded-[2.5rem] p-8">
+                    <h3 class="text-xl font-bold mb-6 text-center">Manage VIP User</h3>
+                    <div class="space-y-4">
+                        <input type="hidden" id="edit-index">
+                        <input type="text" id="u-name" placeholder="Username" class="w-full p-4 rounded-2xl outline-none">
+                        <input type="date" id="u-expiry" class="w-full p-4 rounded-2xl outline-none">
+                        <div class="flex gap-3 pt-4">
+                            <button onclick="closeModal()" class="flex-1 py-4 bg-slate-800 rounded-2xl font-bold text-sm">Cancel</button>
+                            <button onclick="handleSave()" class="flex-1 py-4 premium-gradient rounded-2xl font-bold text-sm">Save & Sync</button>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function toggleSettings() {
+            document.getElementById('modal-container').innerHTML = `
+            <div class="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center p-6 z-50">
+                <div class="glass-card w-full max-w-sm rounded-[2.5rem] p-8">
+                    <h3 class="text-xl font-bold mb-6 text-center">Admin Settings</h3>
+                    <div class="space-y-4">
+                        <input type="text" id="new-adm-user" value="${ADMIN_DATA.user}" class="w-full p-4 rounded-2xl outline-none">
+                        <input type="password" id="new-adm-pass" value="${ADMIN_DATA.pass}" class="w-full p-4 rounded-2xl outline-none">
+                        <button onclick="saveAdminSettings()" class="w-full py-4 premium-gradient rounded-2xl font-bold text-sm">Update Admin</button>
+                        <button onclick="closeModal()" class="w-full text-slate-500 text-xs">Close</button>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // --- HANDLERS ---
+        function handleSave() {
+            const name = document.getElementById('u-name').value;
+            const expiry = document.getElementById('u-expiry').value;
+            const idx = document.getElementById('edit-index').value;
+            if(!name || !expiry) return;
+
+            if(idx !== "") users[idx] = { username: name, expiry: expiry, token_id: "null" };
+            else users.push({ username: name, expiry: expiry, token_id: "null" });
+
+            closeModal();
+            saveToGitHub();
+        }
+
+        function editUser(i) {
+            openAddModal();
+            document.getElementById('edit-index').value = i;
+            document.getElementById('u-name').value = users[i].username;
+            document.getElementById('u-expiry').value = users[i].expiry;
+        }
+
+        function deleteUser(i) { if(confirm("Delete this user?")) { users.splice(i,1); saveToGitHub(); } }
+        function saveAdminSettings() {
+            ADMIN_DATA = { user: document.getElementById('new-adm-user').value, pass: document.getElementById('new-adm-pass').value };
+            localStorage.setItem('admin_settings', JSON.stringify(ADMIN_DATA));
+            alert("Updated! Please Login Again."); location.reload();
+        }
+        function closeModal() { document.getElementById('modal-container').innerHTML = ''; }
+        function logout() { location.reload(); }
+        function copyConfig(name) {
+            navigator.clipboard.writeText(`vless://uuid@yourdomain.com:443?security=reality#${encodeURIComponent(name)}`);
+            alert("Config Copied!");
+        }
+
+        // Search logic
+        document.addEventListener('input', (e) => {
+            if(e.target.id === 'search') {
+                const term = e.target.value.toLowerCase();
+                const cards = document.querySelectorAll('#user-container > div');
+                cards.forEach(card => {
+                    const name = card.querySelector('h4').innerText.toLowerCase();
+                    card.style.display = name.includes(term) ? 'block' : 'none';
+                });
+            }
+        });
+    </script>
+</body>
+</html>
