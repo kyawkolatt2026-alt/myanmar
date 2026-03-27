@@ -11,139 +11,57 @@
         .btn-custom { background-color: #00bcd4; color: white; border-radius: 10px; padding: 10px; }
         .btn-custom:hover { background-color: #0097a7; color: white; }
         .btn-logout { background-color: #ff4081; color: white; border-radius: 8px; font-size: 0.8rem; border: none; padding: 5px 15px; }
-        .status-badge { font-size: 0.8rem; padding: 5px 10px; border-radius: 20px; }
     </style>
 </head>
 <body>
-
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="mb-0">AGE VPN Admin</h2>
-            <span class="status-badge bg-success text-white">● Connected</span>
-        </div>
+        <div><h2>AGE VPN Admin</h2><span class="badge bg-success">● Connected</span></div>
         <button onclick="logout()" class="btn-logout">Logout</button>
     </div>
-
-    <div class="row g-3 mb-4 text-center text-white">
-        <div class="col-4">
-            <div class="p-3 rounded-4" style="background: #00b0ff;"><small>CLIENTS</small><br><strong id="clientCount">0</strong></div>
-        </div>
-        <div class="col-4">
-            <div class="p-3 rounded-4" style="background: #ff4081;"><small>LIMIT</small><br><strong>1 Device</strong></div>
-        </div>
-        <div class="col-4">
-            <div class="p-3 rounded-4" style="background: #ffa000;"><small>SERVER IP</small><br><small>157.85.103.207</small></div>
-        </div>
-    </div>
-
     <div class="card p-4 mb-4">
-        <h5 class="mb-3 text-primary border-start border-4 border-primary ps-2">Create VIP Account</h5>
-        <div class="mb-3">
-            <label class="form-label">USERNAME</label>
-            <input type="text" id="username" class="form-control" placeholder="eg. kyawkyaw">
-        </div>
+        <h5 class="mb-3 text-primary">Create VIP Account</h5>
+        <div class="mb-3"><label>USERNAME</label><input type="text" id="username" class="form-control"></div>
         <div class="row mb-3">
-            <div class="col-6">
-                <label class="form-label">VALID DAYS</label>
-                <input type="number" id="validDays" class="form-control" value="30">
-            </div>
-            <div class="col-6">
-                <label class="form-label">DATA LIMIT (GB)</label>
-                <input type="number" id="gbLimit" class="form-control" value="50">
-            </div>
+            <div class="col-6"><label>VALID DAYS</label><input type="number" id="validDays" class="form-control" value="30"></div>
+            <div class="col-6"><label>DATA LIMIT (GB)</label><input type="number" id="gbLimit" class="form-control" value="50"></div>
         </div>
-        <div class="mb-3">
-            <label class="form-label">TOKEN ID (UUID)</label>
-            <input type="text" id="tokenId" class="form-control" placeholder="null">
-        </div>
-        <button onclick="saveUser()" id="saveBtn" class="btn btn-custom w-100 fw-bold">Save Now</button>
+        <button onclick="saveUser()" id="saveBtn" class="btn btn-custom w-100">Save Now</button>
     </div>
-
-    <div class="card p-3">
-        <h6 class="text-muted mb-3">CLIENT LIST</h6>
-        <div id="userList" class="list-group list-group-flush"></div>
-    </div>
+    <div class="card p-3"><h6>CLIENT LIST</h6><div id="userList" class="list-group list-group-flush"></div></div>
 </div>
-
 <script>
-    // သင့်ရဲ့ အရင် Worker Link ကို သေချာပြန်ထည့်ပေးထားပါတယ်
     const API_URL = "https://jolly-mouse-e734.kyawkolatt2026-alt.workers.dev";
-
-    function logout() {
-        if(confirm("Logout လုပ်မှာ သေချာပါသလား?")) {
-            window.location.href = "login.html"; 
-        }
-    }
-
+    function logout() { if(confirm("Logout?")) window.location.href = "login.html"; }
     async function fetchUsers() {
         try {
             const res = await fetch(API_URL);
             const data = await res.json();
             const users = JSON.parse(atob(data.content));
-            displayUsers(users);
-        } catch (err) { 
-            console.error("Fetch Error:", err);
-            document.getElementById('userList').innerHTML = "Error loading users...";
-        }
+            document.getElementById('userList').innerHTML = users.reverse().map(u => `
+                <div class="list-group-item py-2">
+                    <b>${u.name.toUpperCase()}</b><br>
+                    <small class="text-muted">Expiry: ${u.expiry} | Data: ${u.gbLimit}GB</small>
+                </div>`).join('');
+        } catch (e) { document.getElementById('userList').innerHTML = "Error loading users..."; }
     }
-
-    function displayUsers(users) {
-        const list = document.getElementById('userList');
-        document.getElementById('clientCount').innerText = users.length;
-        list.innerHTML = users.reverse().map(u => `
-            <div class="list-group-item py-3">
-                <div class="fw-bold">${u.name.toUpperCase()}</div>
-                <div class="small text-muted">ID: ${u.token}</div>
-                <div class="small text-muted">Expiry: ${u.expiry} | Data: ${u.gbLimit || 50} GB</div>
-            </div>
-        `).join('');
-    }
-
     async function saveUser() {
         const name = document.getElementById('username').value;
         const days = document.getElementById('validDays').value;
         const gbLimit = document.getElementById('gbLimit').value;
-        let token = document.getElementById('tokenId').value;
+        if (!name) return alert("Enter Name");
         const saveBtn = document.getElementById('saveBtn');
-
-        if (!name) return alert("Username ထည့်ပေးပါ");
-        if (!token || token === "null") token = crypto.randomUUID();
-
         saveBtn.disabled = true;
-        saveBtn.innerText = "Syncing...";
-
         try {
             const res = await fetch(API_URL);
             const fileData = await res.json();
             let users = JSON.parse(atob(fileData.content));
-
             const expiry = new Date();
             expiry.setDate(expiry.getDate() + parseInt(days));
-            
-            users.push({
-                id: Date.now(),
-                name: name,
-                token: token,
-                expiry: expiry.toISOString().split('T')[0],
-                dayCount: days,
-                gbLimit: gbLimit
-            });
-
-            const updateRes = await fetch(API_URL, {
-                method: "PUT",
-                body: JSON.stringify({
-                    content: btoa(JSON.stringify(users, null, 2)),
-                    sha: fileData.sha
-                })
-            });
-
-            if (updateRes.ok) {
-                alert("Saved Successfully!");
-                location.reload();
-            } else { alert("Save Failed!"); }
-        } catch (err) { alert("Error: " + err.message); }
-        finally { saveBtn.disabled = false; saveBtn.innerText = "Save Now"; }
+            users.push({ id: Date.now(), name: name, token: crypto.randomUUID(), expiry: expiry.toISOString().split('T')[0], gbLimit: gbLimit });
+            await fetch(API_URL, { method: "PUT", body: JSON.stringify({ content: btoa(JSON.stringify(users, null, 2)), sha: fileData.sha }) });
+            location.reload();
+        } catch (e) { alert("Error: " + e.message); }
     }
     fetchUsers();
 </script>
