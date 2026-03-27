@@ -1,34 +1,10 @@
 [
   {
-    "id": 1774486980026,
-    "name": "KK",
-    "token": "469f657a-69f8-4b72-965a-8b835e396263",
+    "id": 6,
+    "name": "Myanmar",
+    "limit": 50,
     "expiry": "2026-04-25",
-    "dayCount": "30",
-    "gbLimit": "50"
-  },
-  {
-    "id": 1774501466318,
-    "name": "KKL",
-    "token": "78287661-8278-4389-9189-87382c781903",
-    "expiry": "2026-04-25",
-    "dayCount": "30",
-    "gbLimit": "50"
-  },
-  {
-    "id": 1774502525426,
-    "name": "MKKL",
-    "token": "c68e28d7725782498de09fe9f1b154a086deb2dce7623c09564e7625b8f322c6",
-    "expiry": "2026-04-25",
-    "dayCount": "30",
-    "gbLimit": "50"
-  },
-  {
-    "id": 1774510903526,
-    "name": "MaOhnmar",
-    "token": "92837465-1029-4857-9685-746352410928",
-    "expiry": "2026-03-30",
-    "dayCount": "4",
-    "gbLimit": "50"
+    "status": "active",
+    "last_updated": "2026-03-28"
   }
 ]
