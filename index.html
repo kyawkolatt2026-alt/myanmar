@@ -3,89 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AGE VIP MANAGEMENT</title>
+    <title>AGE VIP PREMIUM PANEL</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        .vip-bg { background: linear-gradient(135deg, #434343 0%, #000000 100%); }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .premium-gradient { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); }
+        .status-online { color: #10b981; text-shadow: 0 0 8px rgba(16, 185, 129, 0.5); }
+        .status-offline { color: #ef4444; }
+        input, select { background: #1e293b !important; border: 1px solid #334155 !important; color: white !important; }
     </style>
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="min-h-screen">
 
     <div id="login-page" class="flex items-center justify-center min-h-screen p-6">
-        <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md border border-purple-100">
+        <div class="glass-card p-8 rounded-3xl shadow-2xl w-full max-w-md">
             <div class="text-center mb-8">
-                <div class="bg-purple-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                    <i class="fas fa-shield-alt text-white text-3xl"></i>
+                <div class="premium-gradient w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-blue-500/50 shadow-lg">
+                    <i class="fas fa-user-shield text-white text-4xl"></i>
                 </div>
-                <h2 class="text-2xl font-bold text-gray-800">AGE VIP Login</h2>
-                <p class="text-gray-500 text-sm">Please enter admin credentials</p>
+                <h2 class="text-3xl font-bold">AGE VIP</h2>
+                <p class="text-slate-400 text-sm mt-2">Admin Authentication</p>
             </div>
             <div class="space-y-4">
-                <input type="text" id="adm-user" placeholder="Username" class="w-full p-4 bg-gray-50 rounded-xl border focus:ring-2 focus:ring-purple-500 outline-none">
-                <input type="password" id="adm-pass" placeholder="Password" class="w-full p-4 bg-gray-50 rounded-xl border focus:ring-2 focus:ring-purple-500 outline-none">
-                <button onclick="handleLogin()" class="w-full bg-purple-600 text-white py-4 rounded-xl font-bold shadow-lg hover:bg-purple-700 transition">LOGIN</button>
+                <input type="text" id="adm-user" placeholder="Username" class="w-full p-4 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="password" id="adm-pass" placeholder="Password" class="w-full p-4 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500">
+                <button onclick="handleLogin()" class="w-full premium-gradient text-white py-4 rounded-2xl font-bold text-lg hover:opacity-90 transition shadow-lg shadow-blue-500/30">LOG IN</button>
             </div>
         </div>
     </div>
 
-    <div id="main-dashboard" class="hidden min-h-screen pb-24">
-        <div class="vip-bg text-white p-6 rounded-b-[40px] shadow-xl relative">
-            <div class="flex justify-between items-center mb-6">
-                <span class="text-lg font-bold">AGE VIP PANEL</span>
-                <button onclick="logout()" class="bg-red-500/20 p-2 rounded-lg"><i class="fas fa-sign-out-alt"></i></button>
+    <div id="main-dashboard" class="hidden">
+        <div class="premium-gradient p-8 rounded-b-[3rem] shadow-2xl">
+            <div class="flex justify-between items-center mb-8">
+                <div class="flex items-center gap-3">
+                    <div class="bg-white/20 p-2 rounded-lg"><i class="fas fa-crown text-yellow-400"></i></div>
+                    <span class="text-xl font-bold tracking-tight">PREMIUM PANEL</span>
+                </div>
+                <button onclick="logout()" class="bg-white/10 hover:bg-white/20 p-3 rounded-xl transition"><i class="fas fa-power-off"></i></button>
             </div>
-            <div class="grid grid-cols-4 gap-2 text-center">
-                <div class="bg-white/10 p-3 rounded-2xl border border-white/10">
-                    <p class="text-xl font-bold" id="total-val">0</p>
-                    <p class="text-[10px] opacity-70">TOTAL</p>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10">
+                    <p class="text-3xl font-bold" id="total-val">0</p>
+                    <p class="text-xs opacity-60 uppercase tracking-widest">Total Users</p>
                 </div>
-                <div class="bg-green-500/20 p-3 rounded-2xl border border-green-500/20">
-                    <p class="text-xl font-bold text-green-400" id="active-val">0</p>
-                    <p class="text-[10px] opacity-70">ACTIVE</p>
+                <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10">
+                    <p class="text-3xl font-bold text-green-400" id="active-val">0</p>
+                    <p class="text-xs opacity-60 uppercase tracking-widest">Online Now</p>
                 </div>
-                </div>
-        </div>
-
-        <div class="px-4 -mt-6">
-            <div class="glass p-4 rounded-2xl shadow-lg flex gap-2">
-                <input type="text" id="search" placeholder="Search user..." class="flex-1 bg-gray-100 p-3 rounded-xl outline-none text-sm">
-                <button onclick="openAddModal()" class="bg-purple-600 text-white px-6 rounded-xl font-bold text-sm">+ Add</button>
             </div>
         </div>
 
-        <div id="user-container" class="p-4 space-y-4">
+        <div class="px-6 -mt-8">
+            <div class="glass-card p-3 rounded-2xl flex gap-3 shadow-xl">
+                <div class="relative flex-1">
+                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                    <input type="text" id="search" placeholder="Search VIP..." class="w-full pl-10 pr-4 py-3 rounded-xl outline-none text-sm">
+                </div>
+                <button onclick="openAddModal()" class="premium-gradient px-6 rounded-xl font-bold text-sm shadow-blue-500/20 shadow-lg">+ ADD</button>
+            </div>
+        </div>
+
+        <div id="user-container" class="p-6 space-y-4 pb-32">
             </div>
 
-        <div class="fixed bottom-6 right-6">
-            <button onclick="toggleSettings()" class="bg-white shadow-xl w-14 h-14 rounded-full flex items-center justify-center text-purple-600 border border-purple-100">
-                <i class="fas fa-cog text-xl"></i>
-            </button>
-        </div>
+        <button onclick="toggleSettings()" class="fixed bottom-8 right-8 w-16 h-16 premium-gradient rounded-full shadow-2xl flex items-center justify-center text-2xl border-4 border-[#0f172a] hover:scale-110 transition">
+            <i class="fas fa-cog"></i>
+        </button>
     </div>
 
-    <div id="modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-6 z-50">
-        <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl">
-            <h3 id="modal-title" class="text-xl font-bold mb-4 text-gray-800">Add New VIP User</h3>
-            <div class="space-y-3">
+    <div id="modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 z-50">
+        <div class="glass-card w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl">
+            <h3 id="modal-title" class="text-2xl font-bold mb-6 text-center">Manage User</h3>
+            <div class="space-y-4">
                 <input type="hidden" id="edit-index">
-                <input type="text" id="u-name" placeholder="User Name" class="w-full p-3 bg-gray-50 rounded-xl border">
-                <input type="date" id="u-expiry" class="w-full p-3 bg-gray-50 rounded-xl border">
-                <div class="flex gap-2">
-                    <button onclick="closeModal()" class="flex-1 py-3 bg-gray-200 rounded-xl font-bold">Cancel</button>
-                    <button onclick="saveUser()" class="flex-1 py-3 bg-purple-600 text-white rounded-xl font-bold shadow-lg">Save</button>
+                <input type="text" id="u-name" placeholder="User Name" class="w-full p-4 rounded-2xl outline-none">
+                <input type="date" id="u-expiry" class="w-full p-4 rounded-2xl outline-none">
+                <div class="flex gap-3 mt-4">
+                    <button onclick="closeModal()" class="flex-1 py-4 bg-slate-700 rounded-2xl font-bold hover:bg-slate-600 transition">Cancel</button>
+                    <button onclick="saveUser()" class="flex-1 py-4 premium-gradient rounded-2xl font-bold shadow-lg shadow-blue-500/20">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 z-50">
+        <div class="glass-card w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl border-blue-500/30">
+            <h3 class="text-2xl font-bold mb-6 text-center"><i class="fas fa-user-lock mr-2 text-blue-400"></i>Settings</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs text-slate-400 ml-2 mb-1 block">New Admin Username</label>
+                    <input type="text" id="new-adm-user" class="w-full p-4 rounded-2xl outline-none">
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400 ml-2 mb-1 block">New Admin Password</label>
+                    <input type="password" id="new-adm-pass" class="w-full p-4 rounded-2xl outline-none">
+                </div>
+                <div class="flex gap-3 mt-4">
+                    <button onclick="toggleSettings()" class="flex-1 py-4 bg-slate-700 rounded-2xl font-bold">Close</button>
+                    <button onclick="saveAdminSettings()" class="flex-1 py-4 premium-gradient rounded-2xl font-bold shadow-lg">Update</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // --- DATA LOGIC ---
         let users = JSON.parse(localStorage.getItem('vip_users')) || [];
-        const ADMIN_DATA = JSON.parse(localStorage.getItem('admin_settings')) || { user: "admin", pass: "123456" };
+        let ADMIN_DATA = JSON.parse(localStorage.getItem('admin_settings')) || { user: "admin", pass: "123456" };
 
-        // 1. LOGIN
         function handleLogin() {
             const u = document.getElementById('adm-user').value;
             const p = document.getElementById('adm-pass').value;
@@ -93,90 +121,120 @@
                 document.getElementById('login-page').classList.add('hidden');
                 document.getElementById('main-dashboard').classList.remove('hidden');
                 renderUsers();
-            } else { alert("မှားယွင်းနေပါသည်။"); }
+            } else { alert("Login Failed!"); }
         }
 
-        // 2. RENDER USERS
         function renderUsers() {
             const container = document.getElementById('user-container');
             container.innerHTML = '';
             document.getElementById('total-val').innerText = users.length;
-            document.getElementById('active-val').innerText = users.length;
+            
+            // Online status ကို စမ်းသပ်ရန် random လုပ်ထားပါသည်
+            let onlineCount = 0;
 
             users.forEach((user, index) => {
+                const isOnline = Math.random() > 0.3; // 70% chance online
+                if(isOnline) onlineCount++;
                 const progress = calculateProgress(user.expiry);
+                
                 container.innerHTML += `
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-green-500 relative">
+                    <div class="glass-card p-5 rounded-3xl relative overflow-hidden transition hover:border-blue-500/50">
                         <div class="flex justify-between items-start">
-                            <div>
-                                <h4 class="font-bold text-gray-800 text-lg">● ${user.name}</h4>
-                                <p class="text-xs text-gray-400 mt-1">Expiry: ${user.expiry}</p>
+                            <div class="flex items-center gap-3">
+                                <div class="w-2 h-2 rounded-full ${isOnline ? 'bg-green-500 shadow-[0_0_8px_#10b981]' : 'bg-slate-600'}"></div>
+                                <div>
+                                    <h4 class="font-bold text-lg text-slate-100">${user.name}</h4>
+                                    <p class="text-[10px] ${isOnline ? 'status-online' : 'status-offline'} font-bold uppercase tracking-widest">
+                                        ${isOnline ? 'Connected' : 'Disconnected'}
+                                    </p>
+                                </div>
                             </div>
-                            <div class="flex gap-2">
-                                <button onclick="copyConfig('${user.name}')" class="text-blue-500 p-2"><i class="fas fa-copy"></i></button>
-                                <button onclick="editUser(${index})" class="text-orange-400 p-2"><i class="fas fa-edit"></i></button>
-                                <button onclick="deleteUser(${index})" class="text-red-400 p-2"><i class="fas fa-trash"></i></button>
+                            <div class="flex gap-1">
+                                <button onclick="copyConfig('${user.name}')" class="w-10 h-10 flex items-center justify-center text-blue-400 hover:bg-blue-500/10 rounded-xl transition"><i class="fas fa-copy"></i></button>
+                                <button onclick="editUser(${index})" class="w-10 h-10 flex items-center justify-center text-amber-400 hover:bg-amber-500/10 rounded-xl transition"><i class="fas fa-edit"></i></button>
+                                <button onclick="deleteUser(${index})" class="w-10 h-10 flex items-center justify-center text-rose-500 hover:bg-rose-500/10 rounded-xl transition"><i class="fas fa-trash-alt"></i></button>
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <div class="flex justify-between text-[10px] mb-1">
-                                <span>Progress</span>
-                                <span class="text-green-500 font-bold">${progress}%</span>
-                            </div>
-                            <div class="w-full bg-gray-100 h-1.5 rounded-full">
-                                <div class="bg-green-500 h-full rounded-full" style="width: ${progress}%"></div>
+                        
+                        <div class="mt-6 grid grid-cols-2 gap-2 text-[11px] text-slate-400">
+                            <div><i class="fas fa-calendar-alt mr-2 text-blue-500"></i>Expiry: ${user.expiry}</div>
+                            <div class="text-right"><i class="fas fa-clock mr-2 text-blue-500"></i>${calculateDaysLeft(user.expiry)} Days Left</div>
+                        </div>
+
+                        <div class="mt-3">
+                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden flex">
+                                <div class="premium-gradient h-full transition-all duration-1000" style="width: ${progress}%"></div>
                             </div>
                         </div>
                     </div>
                 `;
             });
+            document.getElementById('active-val').innerText = onlineCount;
         }
 
-        // 3. ADD/SAVE USER
+        function calculateProgress(exp) {
+            const diff = new Date(exp) - new Date();
+            const percent = (Math.ceil(diff / (1000 * 60 * 60 * 24)) / 30) * 100;
+            return Math.min(100, Math.max(0, Math.round(percent)));
+        }
+
+        function calculateDaysLeft(exp) {
+            const diff = new Date(exp) - new Date();
+            return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+        }
+
         function saveUser() {
             const name = document.getElementById('u-name').value;
             const expiry = document.getElementById('u-expiry').value;
-            const editIdx = document.getElementById('edit-index').value;
+            const idx = document.getElementById('edit-index').value;
+            if(!name || !expiry) return alert("Fill all fields!");
 
-            if (editIdx !== "") {
-                users[editIdx] = { name, expiry };
-            } else {
-                users.push({ name, expiry });
-            }
+            if(idx !== "") users[idx] = { name, expiry };
+            else users.push({ name, expiry });
 
             localStorage.setItem('vip_users', JSON.stringify(users));
-            closeModal();
-            renderUsers();
-        }
-
-        // 4. UTILS
-        function calculateProgress(exp) {
-            const start = new Date();
-            const end = new Date(exp);
-            const diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-            const percent = (diff / 30) * 100; // ရက် ၃၀ ကို အခြေခံထားသည်
-            return percent > 100 ? 100 : (percent < 0 ? 0 : Math.round(percent));
+            closeModal(); renderUsers();
         }
 
         function copyConfig(name) {
-            const config = `vless://uuid-here@yourdomain.com:443?security=reality#${name}`;
+            const config = `vless://uuid-here@yourdomain.com:443?security=reality&sni=google.com&fp=chrome&type=grpc&serviceName=grpc#${encodeURIComponent(name)}`;
             navigator.clipboard.writeText(config);
-            alert(name + " ၏ Config ကို Copy ကူးပြီးပါပြီ!");
+            alert("V2Ray Config Copied for " + name);
         }
 
-        function deleteUser(i) { if(confirm("ဖျက်မှာ သေချာလား?")) { users.splice(i, 1); localStorage.setItem('vip_users', JSON.stringify(users)); renderUsers(); } }
-        function openAddModal() { document.getElementById('modal').classList.remove('hidden'); document.getElementById('edit-index').value = ""; }
+        function toggleSettings() {
+            const m = document.getElementById('settings-modal');
+            m.classList.toggle('hidden');
+            document.getElementById('new-adm-user').value = ADMIN_DATA.user;
+            document.getElementById('new-adm-pass').value = ADMIN_DATA.pass;
+        }
+
+        function saveAdminSettings() {
+            ADMIN_DATA = { 
+                user: document.getElementById('new-adm-user').value, 
+                pass: document.getElementById('new-adm-pass').value 
+            };
+            localStorage.setItem('admin_settings', JSON.stringify(ADMIN_DATA));
+            alert("Settings Updated! Please Login again.");
+            logout();
+        }
+
+        function deleteUser(i) { if(confirm("Are you sure?")) { users.splice(i,1); localStorage.setItem('vip_users', JSON.stringify(users)); renderUsers(); } }
+        function openAddModal() { document.getElementById('modal').classList.remove('hidden'); document.getElementById('edit-index').value = ""; document.getElementById('u-name').value = ""; }
+        function editUser(i) { openAddModal(); document.getElementById('edit-index').value = i; document.getElementById('u-name').value = users[i].name; document.getElementById('u-expiry').value = users[i].expiry; }
         function closeModal() { document.getElementById('modal').classList.add('hidden'); }
         function logout() { location.reload(); }
 
-        function editUser(i) {
-            openAddModal();
-            document.getElementById('modal-title').innerText = "Edit VIP User";
-            document.getElementById('u-name').value = users[i].name;
-            document.getElementById('u-expiry').value = users[i].expiry;
-            document.getElementById('edit-index').value = i;
-        }
+        // Search logic
+        document.getElementById('search').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('#user-container > div');
+            cards.forEach(card => {
+                const name = card.querySelector('h4').innerText.toLowerCase();
+                card.style.display = name.includes(term) ? 'block' : 'none';
+            });
+        });
     </script>
 </body>
-                    </html>
-                    
+    </html>
+    
