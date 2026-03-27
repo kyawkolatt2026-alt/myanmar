@@ -3,38 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AGE VPN Admin Panel</title>
+    <title>AGE VPN Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f8f9fa; font-family: sans-serif; }
-        .card { border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: none; }
-        .btn-custom { background-color: #00bcd4; color: white; border-radius: 10px; padding: 12px; border: none; }
-        .btn-logout { background-color: #ff4081; color: white; border-radius: 8px; font-size: 0.8rem; border: none; padding: 5px 15px; }
+        body { background-color: #f0f2f5; font-family: sans-serif; }
+        .card { border-radius: 12px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .btn-custom { background: #00bcd4; color: white; border-radius: 8px; border: none; padding: 10px; font-weight: bold; }
+        .btn-logout { background: #ff4757; color: white; border: none; border-radius: 6px; padding: 5px 12px; font-size: 0.85rem; }
     </style>
 </head>
 <body>
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <div><h2 class="mb-0 fw-bold">AGE VPN Admin</h2><span class="badge bg-success" id="status">● Connected</span></div>
-        <button onclick="logout()" class="btn-logout fw-bold">Logout</button>
+        <h3 class="fw-bold mb-0">AGE VPN Panel</h3>
+        <button onclick="logout()" class="btn-logout">Logout</button>
     </div>
-    <div class="card p-4 mb-4 text-center">
-        <h5 class="mb-3 text-primary fw-bold">Create VIP Account</h5>
-        <div class="mb-3 text-start"><label class="small fw-bold">USERNAME</label><input type="text" id="username" class="form-control" placeholder="eg. kyawkyaw"></div>
-        <div class="row mb-3 text-start">
-            <div class="col-6"><label class="small fw-bold">DAYS</label><input type="number" id="validDays" class="form-control" value="30"></div>
-            <div class="col-6"><label class="small fw-bold">GB LIMIT</label><input type="number" id="gbLimit" class="form-control" value="50"></div>
+
+    <div class="card p-4 mb-4">
+        <h6 class="text-primary fw-bold mb-3 small">CREATE NEW ACCOUNT</h6>
+        <div class="mb-3">
+            <label class="small fw-bold">USERNAME</label>
+            <input type="text" id="username" class="form-control" placeholder="kyawkyaw">
         </div>
-        <button onclick="saveUser()" id="saveBtn" class="btn btn-custom w-100 fw-bold shadow-sm">Save Now</button>
+        <div class="row mb-3">
+            <div class="col-6"><label class="small fw-bold">DAYS</label><input type="number" id="days" class="form-control" value="30"></div>
+            <div class="col-4 d-none"><input type="number" id="gb" value="50"></div> <div class="col-6"><label class="small fw-bold">DATA (GB)</label><input type="number" id="gbInput" class="form-control" value="50"></div>
+        </div>
+        <button onclick="saveUser()" id="saveBtn" class="btn btn-custom w-100">Save Account</button>
     </div>
+
     <div class="card p-3">
-        <h6 class="text-muted mb-3 fw-bold small text-uppercase">Client List</h6>
+        <h6 class="text-muted mb-3 small fw-bold">RECENT CLIENTS</h6>
         <div id="userList" class="list-group list-group-flush"></div>
     </div>
 </div>
+
 <script>
     const API_URL = "https://jolly-mouse-e734.kyawkolatt2026-alt.workers.dev";
-    function logout() { if(confirm("Logout လုပ်မှာ သေချာပါသလား?")) window.location.href = "login.html"; }
+    function logout() { if(confirm("Logout လုပ်မှာလား?")) window.location.href = "login.html"; }
+
     async function fetchUsers() {
         try {
             const res = await fetch(API_URL);
@@ -42,20 +49,17 @@
             const users = JSON.parse(atob(data.content));
             document.getElementById('userList').innerHTML = users.reverse().map(u => `
                 <div class="list-group-item py-3">
-                    <div class="fw-bold">${u.name.toUpperCase()}</div>
+                    <div class="fw-bold text-dark">${u.name.toUpperCase()}</div>
                     <div class="small text-muted">Expiry: ${u.expiry} | Data: ${u.gbLimit || 50}GB</div>
                 </div>`).join('');
-        } catch (e) { 
-            document.getElementById('userList').innerHTML = "Failed to load users. Check Worker or Token.";
-            document.getElementById('status').className = "badge bg-danger";
-            document.getElementById('status').innerText = "● Error";
-        }
+        } catch (e) { document.getElementById('userList').innerHTML = "Loading error..."; }
     }
+
     async function saveUser() {
         const name = document.getElementById('username').value.trim();
-        const days = document.getElementById('validDays').value;
-        const gbLimit = document.getElementById('gbLimit').value;
-        if (!name) return alert("Username ထည့်ပါ");
+        const days = document.getElementById('days').value;
+        const gb = document.getElementById('gbInput').value;
+        if(!name) return alert("နာမည်ထည့်ပါ");
         const btn = document.getElementById('saveBtn');
         btn.disabled = true; btn.innerText = "Syncing...";
         try {
@@ -63,13 +67,13 @@
             const fileData = await res.json();
             let users = JSON.parse(atob(fileData.content));
             const expiry = new Date(); expiry.setDate(expiry.getDate() + parseInt(days));
-            users.push({ id: Date.now(), name: name, token: crypto.randomUUID(), expiry: expiry.toISOString().split('T')[0], gbLimit: gbLimit });
-            const update = await fetch(API_URL, { method: "PUT", body: JSON.stringify({ content: btoa(JSON.stringify(users, null, 2)), sha: fileData.sha }) });
-            if(update.ok) location.reload(); else alert("Update failed");
+            users.push({ id: Date.now(), name: name, token: crypto.randomUUID(), expiry: expiry.toISOString().split('T')[0], gbLimit: gb });
+            await fetch(API_URL, { method: "PUT", body: JSON.stringify({ content: btoa(JSON.stringify(users, null, 2)), sha: fileData.sha }) });
+            location.reload();
         } catch (e) { alert("Error: " + e.message); }
-        finally { btn.disabled = false; btn.innerText = "Save Now"; }
     }
     fetchUsers();
 </script>
 </body>
 </html>
+
