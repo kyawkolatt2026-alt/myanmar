@@ -3,149 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AGE VPN - Advanced Control</title>
+    <title>AGE VPN - Professional Panel</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #3a7bd5; --accent: #00d2ff; --bg: #f0f2f5; }
-        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        :root { --primary: #3a7bd5; --danger: #ff2d55; --bg: #f4f7f9; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', 'Pyidaungsu', sans-serif; }
         body { margin: 0; background: var(--bg); color: #333; }
-
-        /* Header & Logo */
-        .header { background: white; padding: 20px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .logo-img { width: 60px; height: 60px; border-radius: 15px; margin-bottom: 5px; }
-
-        /* Container */
+        .header { background: white; padding: 15px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .logo-img { width: 50px; height: 50px; border-radius: 12px; margin-bottom: 5px; }
         .container { width: 95%; max-width: 500px; margin: 20px auto; }
-        .card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 20px; }
+        .card { background: white; padding: 20px; border-radius: 18px; box-shadow: 0 5px 20px rgba(0,0,0,0.03); margin-bottom: 20px; }
+        h3 { margin: 0 0 15px 0; font-size: 17px; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        .input-group { margin-bottom: 12px; }
+        .input-group label { display: block; font-size: 11px; font-weight: bold; color: #999; margin-bottom: 4px; }
+        .input-group input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #eee; outline: none; background: #fdfdfd; }
+        .btn-main { width: 100%; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 10px; font-weight: bold; cursor: pointer; }
         
-        /* Form Styles */
-        h3 { margin-top: 0; color: var(--primary); font-size: 18px; display: flex; align-items: center; gap: 10px; }
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 11px; font-weight: bold; color: #999; margin-bottom: 5px; text-transform: uppercase; }
-        .input-group input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #eee; outline: none; background: #f9f9f9; font-size: 15px; }
-        .input-group input:focus { border-color: var(--primary); background: white; }
-        
-        .btn-main { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-main:active { transform: scale(0.98); }
-
-        /* User List Style */
-        .user-item { padding: 15px; border-bottom: 1px solid #f5f5f5; position: relative; }
-        .user-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .user-name { font-weight: bold; font-size: 16px; }
-        .user-limit { font-size: 12px; background: #e3f2fd; color: #1976d2; padding: 2px 8px; border-radius: 5px; }
-        
-        /* Progress Bar (Expired Date) */
-        .progress-container { width: 100%; background: #eee; height: 6px; border-radius: 10px; margin: 8px 0; overflow: hidden; }
-        .progress-bar { height: 100%; background: linear-gradient(90deg, #4caf50, #8bc34a); border-radius: 10px; transition: 0.5s; }
-        .expiry-text { font-size: 11px; color: #888; display: flex; justify-content: space-between; }
-
-        .actions { margin-top: 10px; display: flex; gap: 15px; }
-        .actions i { cursor: pointer; font-size: 14px; color: #666; }
-        .actions i:hover { color: var(--primary); }
-
-        /* Login */
-        #loginPage { height: 100vh; background: linear-gradient(135deg, var(--primary), var(--accent)); display: flex; justify-content: center; align-items: center; position: fixed; width: 100%; z-index: 9999; }
+        .user-item { padding: 15px; border-bottom: 1px solid #f8f8f8; }
+        .user-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .user-name { font-weight: bold; font-size: 15px; }
+        .progress-bg { width: 100%; height: 6px; background: #eee; border-radius: 10px; margin: 8px 0; overflow: hidden; }
+        .progress-bar { height: 100%; transition: 0.5s; }
+        .expiry-row { display: flex; justify-content: space-between; font-size: 11px; color: #777; }
+        .action-row { margin-top: 10px; display: flex; gap: 15px; font-size: 13px; }
+        .action-row span { cursor: pointer; color: #666; }
+        #loginPage { position: fixed; inset: 0; background: white; z-index: 10000; display: flex; justify-content: center; align-items: center; }
     </style>
 </head>
 <body>
 
     <div id="loginPage">
-        <div class="card" style="width: 320px; text-align: center;">
+        <div class="card" style="width:300px; text-align:center;">
             <img src="Myanmar_VPN.png" class="logo-img">
             <h3>Admin Login</h3>
-            <div class="input-group"><input type="password" id="loginPass" placeholder="Password"></div>
-            <button class="btn-main" onclick="checkLogin()">Login</button>
+            <input type="password" id="loginPass" style="width:100%; padding:10px; margin-bottom:15px; border-radius:8px; border:1px solid #ddd;" placeholder="Password">
+            <button class="btn-main" onclick="checkLogin()">Enter Panel</button>
         </div>
     </div>
 
     <div class="header">
         <img src="Myanmar_VPN.png" class="logo-img">
-        <h2 style="margin:0; font-size: 20px; color: var(--primary);">AGE VPN CONTROL</h2>
+        <h2 style="margin:0; font-size: 18px; color:var(--primary);">AGE VPN - VIP MANAGER</h2>
     </div>
 
-    <div class="container" id="mainDashboard" style="display:none;">
+    <div class="container" id="panelUI" style="display:none;">
         <div class="card">
-            <h3 id="formTitle"><i class="fas fa-user-plus"></i> Manage User</h3>
-            <div class="input-group">
-                <label>Username (Remark)</label>
-                <input type="text" id="uName" placeholder="eg. Myanmar-01">
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div class="input-group">
-                    <label>Duration (Days)</label>
-                    <input type="number" id="uDays" value="30">
-                </div>
-                <div class="input-group">
-                    <label>Data Limit (GB)</label>
-                    <input type="number" id="uLimit" value="50">
-                </div>
+            <h3 id="formTitle"><i class="fas fa-edit"></i> Create/Edit User</h3>
+            <div class="input-group"><label>Username</label><input type="text" id="uName"></div>
+            <div style="display:flex; gap:10px;">
+                <div class="input-group" style="flex:1;"><label>Days</label><input type="number" id="uDays" value="30"></div>
+                <div class="input-group" style="flex:1;"><label>Limit (GB)</label><input type="number" id="uLimit" value="50"></div>
             </div>
             <input type="hidden" id="editId">
-            <button class="btn-main" id="submitBtn" onclick="saveUser()">Create / Update User</button>
+            <button class="btn-main" id="btnSave" onclick="saveUser()">Save User & Sync Cloud</button>
         </div>
 
-        <div class="card" style="padding: 10px 0;">
-            <h3 style="padding: 10px 20px;"><i class="fas fa-users"></i> Users List</h3>
-            <div id="userList">
-                </div>
+        <div class="card" style="padding:10px 0;">
+            <h3 style="padding:0 20px;">Active Users</h3>
+            <div id="userList"></div>
         </div>
     </div>
 
 <script>
-    const CLOUD_API = "https://jolly-mouse-e734.kyawkolatt2026.workers.dev";
+    const API = "https://jolly-mouse-e734.kyawkolatt2026.workers.dev";
     let users = [];
     let currentSha = "";
 
     function checkLogin() {
         if(document.getElementById('loginPass').value === "1234") {
             document.getElementById('loginPage').style.display = 'none';
-            document.getElementById('mainDashboard').style.display = 'block';
-            fetchData();
-        } else { alert("Wrong Password!"); }
+            document.getElementById('panelUI').style.display = 'block';
+            loadData();
+        } else { alert("မှားနေသည်!"); }
     }
 
-    async function fetchData() {
+    async function loadData() {
         try {
-            const res = await fetch(`${CLOUD_API}?t=${Date.now()}`);
-            const data = await res.json();
-            currentSha = data.sha;
-            users = JSON.parse(atob(data.content));
+            const r = await fetch(`${API}?t=${Date.now()}`);
+            const d = await r.json();
+            currentSha = d.sha;
+            users = JSON.parse(atob(d.content)) || [];
             render();
-        } catch (e) { console.log("Init DB..."); }
-    }
-
-    function calculateProgress(expiryDate, totalDays) {
-        const now = new Date();
-        const exp = new Date(expiryDate);
-        const diff = exp - now;
-        const daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24));
-        if (daysLeft <= 0) return 0;
-        const percentage = (daysLeft / totalDays) * 100;
-        return percentage > 100 ? 100 : percentage;
+        } catch (e) { console.log("New database will be created"); }
     }
 
     function render() {
-        const list = document.getElementById('userList');
-        list.innerHTML = users.map(u => {
-            const prog = calculateProgress(u.expiry, u.totalDays || 30);
-            const color = prog < 20 ? "#ff2d55" : (prog < 50 ? "#ff9500" : "#4caf50");
-            
+        const div = document.getElementById('userList');
+        div.innerHTML = users.map(u => {
+            const total = u.totalDays || 30;
+            const left = Math.ceil((new Date(u.expiry) - new Date()) / 86400000);
+            const perc = Math.max(0, Math.min(100, (left / total) * 100));
+            const color = perc < 20 ? "#ff2d55" : (perc < 50 ? "#ff9500" : "#4caf50");
+
             return `
                 <div class="user-item">
-                    <div class="user-header">
+                    <div class="user-info">
                         <span class="user-name">${u.name}</span>
-                        <span class="user-limit">${u.limit} GB</span>
+                        <span style="font-size:12px; font-weight:bold;">${u.limit} GB</span>
                     </div>
-                    <div class="progress-container">
-                        <div class="progress-bar" style="width: ${prog}%; background: ${color};"></div>
-                    </div>
-                    <div class="expiry-text">
-                        <span>Expires: ${u.expiry}</span>
-                        <span style="color:${color}; font-weight:bold;">${Math.ceil((new Date(u.expiry) - new Date())/(1000*60*60*24))} days left</span>
-                    </div>
-                    <div class="actions">
-                        <i class="fas fa-edit" onclick="editUser(${u.id})"> Edit</i>
-                        <i class="fas fa-trash" onclick="deleteUser(${u.id})" style="color:#ff2d55;"> Delete</i>
+                    <div class="progress-bg"><div class="progress-bar" style="width:${perc}%; background:${color};"></div></div>
+                    <div class="expiry-row"><span>${u.expiry}</span> <b>${left > 0 ? left : 0} days left</b></div>
+                    <div class="action-row">
+                        <span onclick="editUser(${u.id})"><i class="fas fa-edit"></i> Edit</span>
+                        <span onclick="delUser(${u.id})" style="color:red;"><i class="fas fa-trash"></i> Delete</span>
                     </div>
                 </div>
             `;
@@ -153,69 +113,63 @@
     }
 
     async function saveUser() {
+        const id = document.getElementById('editId').value;
         const name = document.getElementById('uName').value;
         const days = parseInt(document.getElementById('uDays').value);
         const limit = document.getElementById('uLimit').value;
-        const id = document.getElementById('editId').value;
 
-        if(!name) return alert("Enter Username!");
+        if(!name) return alert("အမည်ထည့်ပါ");
 
         if(id) {
-            // Edit Mode
             const idx = users.findIndex(x => x.id == id);
-            users[idx].name = name;
-            users[idx].limit = limit;
-            // ရက်တိုးချင်ရင် အောက်က line ကို သုံးနိုင်ပါတယ်
-            // const newExp = new Date(); newExp.setDate(newExp.getDate() + days); users[idx].expiry = newExp.toISOString().split('T')[0];
+            if(idx !== -1) {
+                users[idx].name = name;
+                users[idx].limit = limit;
+                // ရက်တိုးချင်ရင် အောက်က line ကို သုံးပါ
+                // const ex = new Date(); ex.setDate(ex.getDate() + days); users[idx].expiry = ex.toISOString().split('T')[0];
+            }
         } else {
-            // New User
-            const exp = new Date();
-            exp.setDate(exp.getDate() + days);
-            users.push({ 
-                id: Date.now(), 
-                name, 
-                limit, 
-                expiry: exp.toISOString().split('T')[0],
-                totalDays: days 
-            });
+            const ex = new Date(); ex.setDate(ex.getDate() + days);
+            users.push({ id: Date.now(), name, limit, expiry: ex.toISOString().split('T')[0], totalDays: days });
         }
         await sync();
-        resetForm();
+        reset();
     }
 
-    async function sync() {
-        const content = btoa(unescape(encodeURIComponent(JSON.stringify(users))));
-        await fetch(CLOUD_API, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: "Update Users", content, sha: currentSha })
-        });
-        fetchData();
+    async function delUser(id) {
+        if(confirm("ဖျက်မှာလား?")) {
+            users = users.filter(x => x.id != id); // id တူတာကို အကုန်ဖျက်မယ်
+            await sync();
+        }
     }
 
     function editUser(id) {
         const u = users.find(x => x.id == id);
+        if(!u) return;
         document.getElementById('editId').value = u.id;
         document.getElementById('uName').value = u.name;
         document.getElementById('uLimit').value = u.limit;
         document.getElementById('uDays').value = u.totalDays || 30;
-        document.getElementById('formTitle').innerHTML = "<i class='fas fa-edit'></i> Editing: " + u.name;
-        document.getElementById('submitBtn').innerText = "Update User Info";
+        document.getElementById('formTitle').innerText = "Editing: " + u.name;
         window.scrollTo(0,0);
     }
 
-    function deleteUser(id) {
-        if(confirm("Are you sure?")) {
-            users = users.filter(x => x.id !== id);
-            sync();
-        }
+    async function sync() {
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify(users))));
+        const r = await fetch(API, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: "Update Data", content, sha: currentSha })
+        });
+        const res = await r.json();
+        currentSha = res.content.sha;
+        render();
     }
 
-    function resetForm() {
+    function reset() {
         document.getElementById('editId').value = "";
         document.getElementById('uName').value = "";
-        document.getElementById('formTitle').innerHTML = "<i class='fas fa-user-plus'></i> Manage User";
-        document.getElementById('submitBtn').innerText = "Create / Update User";
+        document.getElementById('formTitle').innerText = "Create/Edit User";
     }
 </script>
 </body>
