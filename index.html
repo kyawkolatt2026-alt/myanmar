@@ -3,217 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AGE VPN - X-UI Controller</title>
+    <title>AGE VPN - Server Control</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #3a7bd5; --secondary: #00d2ff; --bg: #f8f9fa; --danger: #ff2d55; }
+        :root { --primary: #3a7bd5; --bg: #f4f7f6; --white: #ffffff; }
         * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { margin: 0; background: var(--bg); color: #333; }
+        body { margin: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
 
-        /* Login */
-        #loginPage { height: 100vh; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; justify-content: center; align-items: center; position: fixed; width: 100%; z-index: 9999; }
-        .login-box { width: 90%; max-width: 350px; background: white; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
-        .logo-img { width: 70px; height: 70px; border-radius: 15px; margin-bottom: 15px; border: 2px solid #eee; }
-
-        /* Navigation */
-        .nav-bar { background: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .tab-group { display: flex; gap: 10px; }
-        .tab-btn { border: none; background: none; font-weight: bold; color: #888; cursor: pointer; padding: 8px 12px; }
-        .tab-btn.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
-
-        /* Cards */
-        #mainDashboard { display: none; padding: 15px; max-width: 600px; margin: auto; }
-        .card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 20px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 11px; font-weight: bold; color: #999; margin-bottom: 5px; text-transform: uppercase; }
-        .form-group input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #eee; outline: none; font-size: 15px; }
-
-        /* User List */
-        .user-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #f5f5f5; }
-        .user-info b { font-size: 15px; }
-        .user-info span { font-size: 12px; color: #777; }
-        .limit-badge { background: #e3f2fd; color: #1976d2; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; }
+        /* Logo & Header */
+        .header { text-align: center; padding: 30px 20px; width: 100%; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .logo-img { width: 80px; height: 80px; border-radius: 20px; margin-bottom: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         
-        .btn-save { width: 100%; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        .btn-danger { background: var(--danger); }
+        /* Main Container */
+        .container { width: 90%; max-width: 400px; }
+        .card { background: var(--white); padding: 25px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); margin-bottom: 20px; }
+        
+        h2 { color: var(--primary); margin-top: 0; font-size: 20px; text-align: center; }
+        .status-badge { display: block; text-align: center; font-size: 12px; font-weight: bold; padding: 5px; border-radius: 50px; margin-bottom: 20px; background: #e3f2fd; color: var(--primary); }
+
+        /* Input Styles */
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 11px; font-weight: bold; color: #888; margin-bottom: 5px; text-transform: uppercase; }
+        .input-group input { width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 10px; background: #f9f9f9; outline: none; font-size: 16px; }
+        .input-group input:focus { border-color: var(--primary); background: white; }
+
+        .btn-update { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        .btn-update:active { transform: scale(0.98); }
+
+        /* Server Info */
+        .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f1f1f1; font-size: 14px; }
+        .info-row span { color: #888; }
+        .info-row b { color: #333; }
     </style>
 </head>
 <body>
 
-    <div id="loginPage">
-        <div class="login-box">
-            <img src="Myanmar_VPN.png" class="logo-img">
-            <h3>AGE VPN Admin</h3>
-            <div class="form-group"><input type="text" id="admU" placeholder="Username"></div>
-            <div class="form-group"><input type="password" id="admP" placeholder="Password"></div>
-            <button class="btn-save" onclick="login()">Login</button>
-        </div>
+    <div class="header">
+        <img src="Myanmar_VPN.png" class="logo-img" alt="Logo">
+        <h2 style="margin:0;">AGE VPN CONTROL</h2>
     </div>
 
-    <div id="mainDashboard">
-        <div class="nav-bar">
-            <img src="Myanmar_VPN.png" style="width: 30px; border-radius: 8px;">
-            <div class="tab-group">
-                <button class="tab-btn active" onclick="switchTab('users')">Users</button>
-                <button class="tab-btn" onclick="switchTab('config')">X-UI Settings</button>
+    <div class="container">
+        <div id="loginArea" class="card">
+            <h2>Admin Login</h2>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="loginPass" placeholder="••••">
             </div>
-            <button onclick="location.reload()" style="background:none; border:none; color:red; font-weight:bold;">Logout</button>
+            <button class="btn-update" onclick="checkLogin()">Login</button>
         </div>
 
-        <div id="syncIndicator" style="text-align:center; font-size:11px; margin: 10px 0; font-weight:bold;"></div>
-
-        <div id="userTab">
+        <div id="controlArea" style="display:none;">
+            <div id="syncStatus" class="status-badge">🔄 Syncing with X-UI...</div>
+            
             <div class="card">
-                <h4 id="formTitle">+ Add Account (Sync to X-UI)</h4>
-                <div class="form-group"><label>Client Remark</label><input type="text" id="uName" placeholder="eg. Myanmar-User-1"></div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <div class="form-group"><label>Days</label><input type="number" id="uDays" value="30"></div>
-                    <div class="form-group"><label>Data Limit (GB)</label><input type="number" id="uLimit" value="50"></div>
+                <h2>Manage Client</h2>
+                <div class="input-group">
+                    <label>Client Name (Remark)</label>
+                    <input type="text" id="cName" value="Myanmar">
                 </div>
-                <input type="hidden" id="editId">
-                <button class="btn-save" id="saveBtn" onclick="saveUser()">Create & Push to X-UI</button>
+                <div class="input-group">
+                    <label>Total Data Limit (GB)</label>
+                    <input type="number" id="cLimit" placeholder="eg. 50">
+                </div>
+                <div class="input-group">
+                    <label>Inbound ID (from X-UI)</label>
+                    <input type="number" id="inboundId" value="6">
+                </div>
+                <button class="btn-update" onclick="updateServer()">Update X-UI Now</button>
             </div>
 
-            <div class="card" style="padding:0;" id="userList"></div>
-        </div>
-
-        <div id="configTab" style="display:none;">
             <div class="card">
-                <h4><i class="fas fa-server"></i> X-UI API Configuration</h4>
-                <div class="form-group"><label>X-UI Panel URL</label><input type="text" id="xuiHost" placeholder="http://157.85.103.207:2053"></div>
-                <div class="form-group"><label>X-UI Username</label><input type="text" id="xuiUser"></div>
-                <div class="form-group"><label>X-UI Password</label><input type="password" id="xuiPass"></div>
-                <p style="font-size:11px; color:#666;">*Data limit များကို X-UI API သို့ တိုက်ရိုက်ပေးပို့ပါမည်။</p>
-                <button class="btn-save" style="background:#4caf50;" onclick="saveConfig()">Save API Settings</button>
+                <h2>Current Info</h2>
+                <div class="info-row"><span>Status:</span><b id="curStatus">Active</b></div>
+                <div class="info-row"><span>Total Limit:</span><b id="curLimit">0 GB</b></div>
+                <div class="info-row"><span>Server IP:</span><b>157.85.103.207</b></div>
             </div>
         </div>
     </div>
 
 <script>
     const CLOUD_API = "https://jolly-mouse-e734.kyawkolatt2026.workers.dev";
-    let users = [];
     let currentSha = "";
-    
-    // Login Handling
-    function login() {
-        const u = document.getElementById('admU').value;
-        const p = document.getElementById('admP').value;
-        if(u === "admin" && p === "1234") {
-            document.getElementById('loginPage').style.display = 'none';
-            document.getElementById('mainDashboard').style.display = 'block';
-            fetchData();
-        } else { alert("Login Failed!"); }
-    }
+    let serverData = { name: "Myanmar", limit: 50, id: 6 };
 
-    function switchTab(t) {
-        document.getElementById('userTab').style.display = t === 'users' ? 'block' : 'none';
-        document.getElementById('configTab').style.display = t === 'config' ? 'block' : 'none';
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
+    function checkLogin() {
+        if(document.getElementById('loginPass').value === "1234") {
+            document.getElementById('loginArea').style.display = 'none';
+            document.getElementById('controlArea').style.display = 'block';
+            fetchData();
+        } else { alert("Wrong Password!"); }
     }
 
     async function fetchData() {
-        showSync("🔄 Syncing Cloud...");
         try {
             const res = await fetch(`${CLOUD_API}?t=${Date.now()}`);
             const data = await res.json();
             currentSha = data.sha;
-            users = JSON.parse(atob(data.content));
-            render();
-            showSync("✅ Data Ready", "green");
-        } catch (e) { showSync("❌ Sync Error", "red"); }
+            const content = JSON.parse(atob(data.content));
+            serverData = content[0] || serverData; // ပထမဆုံး client ကိုပဲ ယူသုံးပါမယ်
+            
+            document.getElementById('cName').value = serverData.name;
+            document.getElementById('cLimit').value = serverData.limit;
+            document.getElementById('inboundId').value = serverData.id;
+            
+            updateUI();
+            setStatus("✅ Synced with Cloud", "#4caf50");
+        } catch (e) { setStatus("❌ Connection Error", "red"); }
     }
 
-    function render() {
-        document.getElementById('userList').innerHTML = users.map(u => `
-            <div class="user-item">
-                <div class="user-info">
-                    <b>${u.name}</b> <span class="limit-badge">${u.limit} GB</span><br>
-                    <span>Expiry: ${u.expiry}</span>
-                </div>
-                <div>
-                    <i class="fas fa-edit" style="color:blue; margin-right:15px; cursor:pointer;" onclick="editUser(${u.id})"></i>
-                    <i class="fas fa-trash" style="color:red; cursor:pointer;" onclick="deleteUser(${u.id})"></i>
-                </div>
-            </div>
-        `).join('');
+    function updateUI() {
+        document.getElementById('curLimit').innerText = serverData.limit + " GB";
     }
 
-    async function saveUser() {
-        const name = document.getElementById('uName').value;
-        const days = document.getElementById('uDays').value;
-        const limit = document.getElementById('uLimit').value;
-        const id = document.getElementById('editId').value;
+    async function updateServer() {
+        setStatus("💾 Updating X-UI...", "orange");
+        
+        serverData.name = document.getElementById('cName').value;
+        serverData.limit = document.getElementById('cLimit').value;
+        serverData.id = document.getElementById('inboundId').value;
 
-        if(!name) return alert("Please enter Remark");
-
-        if(id) {
-            const i = users.findIndex(x => x.id == id);
-            users[i].name = name;
-            users[i].limit = limit;
-        } else {
-            const exp = new Date();
-            exp.setDate(exp.getDate() + parseInt(days));
-            users.push({ id: Date.now(), name, limit, expiry: exp.toISOString().split('T')[0] });
-        }
-        await sync();
-        resetForm();
-    }
-
-    async function sync() {
-        showSync("💾 Saving Data...", "orange");
-        const content = btoa(unescape(encodeURIComponent(JSON.stringify(users))));
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify([serverData]))));
+        
         try {
             const res = await fetch(CLOUD_API, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: "Update X-UI Data", content, sha: currentSha })
+                body: JSON.stringify({ message: "Update Client Limit", content, sha: currentSha })
             });
             const d = await res.json();
             currentSha = d.content.sha;
-            render();
-            showSync("✅ Cloud & X-UI Updated", "green");
-        } catch (e) { alert("Save Error"); }
+            updateUI();
+            setStatus("✅ X-UI Data Updated Successfully", "#4caf50");
+            alert("Updated! Data limit is now " + serverData.limit + " GB");
+        } catch (e) { alert("Error saving data!"); }
     }
 
-    function editUser(id) {
-        const u = users.find(x => x.id == id);
-        document.getElementById('editId').value = u.id;
-        document.getElementById('uName').value = u.name;
-        document.getElementById('uLimit').value = u.limit;
-        document.getElementById('formTitle').innerText = "Edit User Settings";
-        document.getElementById('saveBtn').innerText = "Update User";
-        window.scrollTo(0,0);
-    }
-
-    function resetForm() {
-        document.getElementById('editId').value = "";
-        document.getElementById('uName').value = "";
-        document.getElementById('formTitle').innerText = "+ Add Account";
-        document.getElementById('saveBtn').innerText = "Create & Push to X-UI";
-    }
-
-    function showSync(m, c) {
-        const s = document.getElementById('syncIndicator');
-        s.innerText = m; s.style.color = c;
-    }
-
-    async function deleteUser(id) {
-        if(confirm("X-UI ထဲကော Panel ထဲကပါ ဖျက်မှာလား?")) {
-            users = users.filter(x => x.id !== id);
-            await sync();
-        }
-    }
-
-    // Config Persistence
-    function saveConfig() {
-        const c = { 
-            h: document.getElementById('xuiHost').value, 
-            u: document.getElementById('xuiUser').value, 
-            p: document.getElementById('xuiPass').value 
-        };
-        localStorage.setItem('xui_api_config', JSON.stringify(c));
-        alert("X-UI API Configuration Saved!");
+    function setStatus(msg, color) {
+        const s = document.getElementById('syncStatus');
+        s.innerText = msg;
+        s.style.color = color;
     }
 </script>
 </body>
