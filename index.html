@@ -3,87 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AGE VIP PANEL</title>
+    <title>AGE VIP MANAGEMENT</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        .vip-gradient { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .user-card { border: 2px solid #22c55e; transition: transform 0.2s; }
-        .user-card:hover { transform: scale(1.02); }
+        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .vip-bg { background: linear-gradient(135deg, #434343 0%, #000000 100%); }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body class="bg-gray-100 font-sans">
 
-    <div class="vip-gradient text-white p-6 rounded-b-3xl shadow-lg text-center relative">
-        <h1 class="text-xl font-bold">AGE VIP PANEL</h1>
-        <p class="text-sm opacity-80">For VIP Users</p>
-        
-        <div class="flex justify-around mt-6">
-            <div><p class="text-2xl font-bold" id="total-count">0</p><p class="text-xs">TOTAL</p></div>
-            <div><p class="text-2xl font-bold text-green-400" id="active-count">0</p><p class="text-xs">ACTIVE</p></div>
-            <div><p class="text-2xl font-bold text-yellow-400">0</p><p class="text-xs">INACTIVE</p></div>
-            <div><p class="text-2xl font-bold text-red-400">0</p><p class="text-xs">OFFLINE</p></div>
+    <div id="login-page" class="flex items-center justify-center min-h-screen p-6">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md border border-purple-100">
+            <div class="text-center mb-8">
+                <div class="bg-purple-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <i class="fas fa-shield-alt text-white text-3xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800">AGE VIP Login</h2>
+                <p class="text-gray-500 text-sm">Please enter admin credentials</p>
+            </div>
+            <div class="space-y-4">
+                <input type="text" id="adm-user" placeholder="Username" class="w-full p-4 bg-gray-50 rounded-xl border focus:ring-2 focus:ring-purple-500 outline-none">
+                <input type="password" id="adm-pass" placeholder="Password" class="w-full p-4 bg-gray-50 rounded-xl border focus:ring-2 focus:ring-purple-500 outline-none">
+                <button onclick="handleLogin()" class="w-full bg-purple-600 text-white py-4 rounded-xl font-bold shadow-lg hover:bg-purple-700 transition">LOGIN</button>
+            </div>
         </div>
     </div>
 
-    <div class="p-4 space-y-4">
-        <input type="text" id="searchInput" placeholder="Search by ID or Username..." 
-               class="w-full p-3 rounded-full border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
-        
-        <button class="w-full bg-purple-600 text-white py-3 rounded-xl font-bold shadow-md hover:bg-purple-700">
-            <i class="fas fa-plus-circle mr-2"></i> Add New User
-        </button>
+    <div id="main-dashboard" class="hidden min-h-screen pb-24">
+        <div class="vip-bg text-white p-6 rounded-b-[40px] shadow-xl relative">
+            <div class="flex justify-between items-center mb-6">
+                <span class="text-lg font-bold">AGE VIP PANEL</span>
+                <button onclick="logout()" class="bg-red-500/20 p-2 rounded-lg"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+            <div class="grid grid-cols-4 gap-2 text-center">
+                <div class="bg-white/10 p-3 rounded-2xl border border-white/10">
+                    <p class="text-xl font-bold" id="total-val">0</p>
+                    <p class="text-[10px] opacity-70">TOTAL</p>
+                </div>
+                <div class="bg-green-500/20 p-3 rounded-2xl border border-green-500/20">
+                    <p class="text-xl font-bold text-green-400" id="active-val">0</p>
+                    <p class="text-[10px] opacity-70">ACTIVE</p>
+                </div>
+                </div>
+        </div>
+
+        <div class="px-4 -mt-6">
+            <div class="glass p-4 rounded-2xl shadow-lg flex gap-2">
+                <input type="text" id="search" placeholder="Search user..." class="flex-1 bg-gray-100 p-3 rounded-xl outline-none text-sm">
+                <button onclick="openAddModal()" class="bg-purple-600 text-white px-6 rounded-xl font-bold text-sm">+ Add</button>
+            </div>
+        </div>
+
+        <div id="user-container" class="p-4 space-y-4">
+            </div>
+
+        <div class="fixed bottom-6 right-6">
+            <button onclick="toggleSettings()" class="bg-white shadow-xl w-14 h-14 rounded-full flex items-center justify-center text-purple-600 border border-purple-100">
+                <i class="fas fa-cog text-xl"></i>
+            </button>
+        </div>
     </div>
 
-    <div id="userList" class="p-4 space-y-4 pb-20">
+    <div id="modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-6 z-50">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl">
+            <h3 id="modal-title" class="text-xl font-bold mb-4 text-gray-800">Add New VIP User</h3>
+            <div class="space-y-3">
+                <input type="hidden" id="edit-index">
+                <input type="text" id="u-name" placeholder="User Name" class="w-full p-3 bg-gray-50 rounded-xl border">
+                <input type="date" id="u-expiry" class="w-full p-3 bg-gray-50 rounded-xl border">
+                <div class="flex gap-2">
+                    <button onclick="closeModal()" class="flex-1 py-3 bg-gray-200 rounded-xl font-bold">Cancel</button>
+                    <button onclick="saveUser()" class="flex-1 py-3 bg-purple-600 text-white rounded-xl font-bold shadow-lg">Save</button>
+                </div>
+            </div>
         </div>
+    </div>
 
     <script>
-        // vip.json ဖိုင်ထဲက data ကို လှမ်းဖတ်ခြင်း
-        async function loadUsers() {
-            try {
-                const response = await fetch('vip.json');
-                const users = await response.json();
-                displayUsers(users);
-            } catch (error) {
-                console.error("Error loading users:", error);
-            }
+        // --- DATA LOGIC ---
+        let users = JSON.parse(localStorage.getItem('vip_users')) || [];
+        const ADMIN_DATA = JSON.parse(localStorage.getItem('admin_settings')) || { user: "admin", pass: "123456" };
+
+        // 1. LOGIN
+        function handleLogin() {
+            const u = document.getElementById('adm-user').value;
+            const p = document.getElementById('adm-pass').value;
+            if (u === ADMIN_DATA.user && p === ADMIN_DATA.pass) {
+                document.getElementById('login-page').classList.add('hidden');
+                document.getElementById('main-dashboard').classList.remove('hidden');
+                renderUsers();
+            } else { alert("မှားယွင်းနေပါသည်။"); }
         }
 
-        function displayUsers(users) {
-            const container = document.getElementById('user-list');
-            document.getElementById('total-count').innerText = users.length;
-            document.getElementById('active-count').innerText = users.length;
+        // 2. RENDER USERS
+        function renderUsers() {
+            const container = document.getElementById('user-container');
+            container.innerHTML = '';
+            document.getElementById('total-val').innerText = users.length;
+            document.getElementById('active-val').innerText = users.length;
 
-            const html = users.map(user => `
-                <div class="user-card bg-white p-4 rounded-2xl shadow-sm relative">
-                    <div class="flex justify-between items-start mb-2">
-                        <h3 class="text-green-600 font-bold text-lg">● ${user.username}</h3>
-                        <span class="text-green-500 text-xs font-bold">Online</span>
-                    </div>
-                    <div class="space-y-1 text-sm text-gray-600">
-                        <p><i class="fas fa-key w-6"></i> Token ID: <span class="text-gray-400">${user.token_id || 'null'}</span></p>
-                        <p><i class="fas fa-user w-6"></i> Username: ${user.username}</p>
-                        <p><i class="fas fa-calendar w-6"></i> Expiry: ${user.expiry}</p>
-                        <p><i class="fas fa-clock w-6"></i> Remaining: <span class="text-blue-500 font-bold">${calculateRemaining(user.expiry)} days</span></p>
-                    </div>
-                    <div class="mt-3">
-                        <p class="text-[10px] text-gray-400 mb-1">Subscription Progress <span class="float-right text-green-500">100%</span></p>
-                        <div class="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
-                            <div class="bg-green-500 h-full w-full"></div>
+            users.forEach((user, index) => {
+                const progress = calculateProgress(user.expiry);
+                container.innerHTML += `
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-green-500 relative">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-bold text-gray-800 text-lg">● ${user.name}</h4>
+                                <p class="text-xs text-gray-400 mt-1">Expiry: ${user.expiry}</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="copyConfig('${user.name}')" class="text-blue-500 p-2"><i class="fas fa-copy"></i></button>
+                                <button onclick="editUser(${index})" class="text-orange-400 p-2"><i class="fas fa-edit"></i></button>
+                                <button onclick="deleteUser(${index})" class="text-red-400 p-2"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex justify-between text-[10px] mb-1">
+                                <span>Progress</span>
+                                <span class="text-green-500 font-bold">${progress}%</span>
+                            </div>
+                            <div class="w-full bg-gray-100 h-1.5 rounded-full">
+                                <div class="bg-green-500 h-full rounded-full" style="width: ${progress}%"></div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
-            document.getElementById('userList').innerHTML = html;
+                `;
+            });
         }
 
-        function calculateRemaining(expiryDate) {
-            const diff = new Date(expiryDate) - new Date();
-            return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+        // 3. ADD/SAVE USER
+        function saveUser() {
+            const name = document.getElementById('u-name').value;
+            const expiry = document.getElementById('u-expiry').value;
+            const editIdx = document.getElementById('edit-index').value;
+
+            if (editIdx !== "") {
+                users[editIdx] = { name, expiry };
+            } else {
+                users.push({ name, expiry });
+            }
+
+            localStorage.setItem('vip_users', JSON.stringify(users));
+            closeModal();
+            renderUsers();
         }
 
-        loadUsers();
+        // 4. UTILS
+        function calculateProgress(exp) {
+            const start = new Date();
+            const end = new Date(exp);
+            const diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+            const percent = (diff / 30) * 100; // ရက် ၃၀ ကို အခြေခံထားသည်
+            return percent > 100 ? 100 : (percent < 0 ? 0 : Math.round(percent));
+        }
+
+        function copyConfig(name) {
+            const config = `vless://uuid-here@yourdomain.com:443?security=reality#${name}`;
+            navigator.clipboard.writeText(config);
+            alert(name + " ၏ Config ကို Copy ကူးပြီးပါပြီ!");
+        }
+
+        function deleteUser(i) { if(confirm("ဖျက်မှာ သေချာလား?")) { users.splice(i, 1); localStorage.setItem('vip_users', JSON.stringify(users)); renderUsers(); } }
+        function openAddModal() { document.getElementById('modal').classList.remove('hidden'); document.getElementById('edit-index').value = ""; }
+        function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+        function logout() { location.reload(); }
+
+        function editUser(i) {
+            openAddModal();
+            document.getElementById('modal-title').innerText = "Edit VIP User";
+            document.getElementById('u-name').value = users[i].name;
+            document.getElementById('u-expiry').value = users[i].expiry;
+            document.getElementById('edit-index').value = i;
+        }
     </script>
 </body>
-</html>
+                    </html>
+                    
