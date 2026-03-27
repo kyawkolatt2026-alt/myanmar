@@ -1,36 +1,129 @@
 <!DOCTYPE html>
-<html>
+<html lang="my">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login to AGE VPN</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); height: 100vh; display: flex; align-items: center; justify-content: center; color: white; }
-        .login-card { background: rgba(255,255,255,0.1); backdrop-filter: blur(15px); padding: 40px; border-radius: 25px; width: 100%; max-width: 350px; border: 1px solid rgba(255,255,255,0.1); text-align: center; }
-        .form-control { background: rgba(255,255,255,0.1); border: none; color: white; padding: 12px; border-radius: 12px; margin-bottom: 20px; }
-        .btn-login { background: linear-gradient(to right, #00d2ff, #3a7bd5); border: none; color: white; font-weight: bold; width: 100%; padding: 12px; border-radius: 12px; }
+        :root {
+            --bg-color: #0f0c29;
+            --accent-color: #00d2ff;
+            --button-grad: linear-gradient(to right, #00d2ff, #3a7bd5);
+        }
+        body { 
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); 
+            height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: white; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+        }
+        .login-card { 
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(15px); 
+            padding: 40px; 
+            border-radius: 30px; 
+            width: 100%; 
+            max-width: 380px; 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            text-align: center; 
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+        .logo-area i {
+            font-size: 60px;
+            color: var(--accent-color);
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 10px rgba(0, 210, 255, 0.5));
+        }
+        h3 { font-weight: 800; letter-spacing: 1px; margin-bottom: 30px; }
+        .form-control { 
+            background: rgba(255, 255, 255, 0.08); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            color: white; 
+            padding: 14px; 
+            border-radius: 15px; 
+            margin-bottom: 20px; 
+        }
+        .form-control:focus { 
+            background: rgba(255, 255, 255, 0.15); 
+            color: white; 
+            border-color: var(--accent-color); 
+            box-shadow: none; 
+        }
+        .btn-login { 
+            background: var(--button-grad); 
+            border: none; 
+            color: white; 
+            font-weight: bold; 
+            width: 100%; 
+            padding: 14px; 
+            border-radius: 15px; 
+            transition: 0.4s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .btn-login:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 8px 20px rgba(0, 210, 255, 0.4); 
+        }
+        .btn-login:active { transform: scale(0.98); }
+        .footer-text { margin-top: 25px; font-size: 12px; color: rgba(255, 255, 255, 0.4); }
     </style>
 </head>
 <body>
+
     <div class="login-card">
-        <h2 class="fw-bold mb-4">AGE VPN</h2>
-        <input type="text" id="u" class="form-control" placeholder="Admin Username">
-        <input type="password" id="p" class="form-control" placeholder="Admin Password">
-        <button onclick="login()" class="btn btn-login">CONNECT PANEL</button>
+        <div class="logo-area">
+            <i class="fas fa-shield-alt"></i>
+        </div>
+        <h3>AGE VPN</h3>
+        
+        <div class="text-start">
+            <label class="small mb-1 ps-2 text-white-50">ADMIN USERNAME</label>
+            <input type="text" id="username" class="form-control" placeholder="Enter username" autocomplete="off">
+            
+            <label class="small mb-1 ps-2 text-white-50">PASSWORD</label>
+            <input type="password" id="password" class="form-control" placeholder="Enter password">
+        </div>
+
+        <button onclick="checkLogin()" class="btn btn-login mt-2">Sign In to Panel</button>
+        
+        <p class="footer-text">© 2026 AGE VPN PREMIUM SERVICES</p>
     </div>
+
     <script>
-        function login() {
-            const u = document.getElementById('u').value;
-            const p = document.getElementById('p').value;
-            // ဒီနေရာမှာ Default admin / 1234 ထားပေးထားပါတယ်
+        // Login ဝင်ရန် Function
+        function checkLogin() {
+            const u = document.getElementById('username').value.trim();
+            const p = document.getElementById('password').value.trim();
+            
+            // Username: admin / Password: 1234
             if(u === "admin" && p === "1234") {
-                sessionStorage.setItem("login", "true");
+                // Auth ခွင့်ပြုချက်ကို သိမ်းဆည်းခြင်း
+                localStorage.setItem("age_vpn_auth", "granted");
                 window.location.href = "index.html";
             } else {
-                alert("Invalid Credentials!");
+                // မှားယွင်းပါက Error ပြခြင်း
+                alert("Invalid Credentials! Please try again.");
             }
         }
+
+        // Enter ခေါက်ရင် Login ဝင်အောင်လုပ်ခြင်း
+        document.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                checkLogin();
+            }
+        });
+
+        // Logged in ဖြစ်ပြီးသားဆိုရင် တိုက်ရိုက်ပေးဝင်ခြင်း
+        if(localStorage.getItem("age_vpn_auth") === "granted") {
+            window.location.href = "index.html";
+        }
     </script>
+
 </body>
 </html>
