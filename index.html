@@ -7,164 +7,142 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
-        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .premium-gradient { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); }
-        .status-online { color: #10b981; text-shadow: 0 0 8px rgba(16, 185, 129, 0.5); }
-        .status-offline { color: #ef4444; }
-        input, select { background: #1e293b !important; border: 1px solid #334155 !important; color: white !important; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@500&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fafc; margin: 0; }
+        .glass-card { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .premium-gradient { background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%); }
+        .clock-font { font-family: 'JetBrains+Mono', monospace; letter-spacing: -1px; }
+        .status-online { color: #10b981; text-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
+        .status-offline { color: #64748b; }
+        input, select { background: #0f172a !important; border: 1px solid #1e293b !important; color: white !important; }
+        .glow-dot { box-shadow: 0 0 15px currentColor; }
     </style>
 </head>
 <body class="min-h-screen">
 
     <div id="login-page" class="flex items-center justify-center min-h-screen p-6">
-        <div class="glass-card p-8 rounded-3xl shadow-2xl w-full max-w-md">
-            <div class="text-center mb-8">
-                <div class="premium-gradient w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-blue-500/50 shadow-lg">
-                    <i class="fas fa-user-shield text-white text-4xl"></i>
-                </div>
-                <h2 class="text-3xl font-bold">AGE VIP</h2>
-                <p class="text-slate-400 text-sm mt-2">Admin Authentication</p>
+        <div class="glass-card p-10 rounded-[2.5rem] shadow-2xl w-full max-w-sm text-center">
+            <div class="premium-gradient w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-blue-600/40 shadow-2xl">
+                <i class="fas fa-fingerprint text-white text-4xl"></i>
             </div>
-            <div class="space-y-4">
-                <input type="text" id="adm-user" placeholder="Username" class="w-full p-4 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500">
-                <input type="password" id="adm-pass" placeholder="Password" class="w-full p-4 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500">
-                <button onclick="handleLogin()" class="w-full premium-gradient text-white py-4 rounded-2xl font-bold text-lg hover:opacity-90 transition shadow-lg shadow-blue-500/30">LOG IN</button>
+            <h2 class="text-3xl font-bold tracking-tight">AGE VIP</h2>
+            <p class="text-slate-500 text-xs mt-2 uppercase tracking-widest">Admin Access Only</p>
+            <div class="mt-8 space-y-4 text-left">
+                <input type="text" id="adm-user" placeholder="Username" class="w-full p-4 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                <input type="password" id="adm-pass" placeholder="Password" class="w-full p-4 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                <button onclick="handleLogin()" class="w-full premium-gradient text-white py-4 rounded-2xl font-bold text-lg mt-4 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-blue-500/25">LOG IN</button>
             </div>
         </div>
     </div>
 
     <div id="main-dashboard" class="hidden">
-        <div class="premium-gradient p-8 rounded-b-[3rem] shadow-2xl">
-            <div class="flex justify-between items-center mb-8">
-                <div class="flex items-center gap-3">
-                    <div class="bg-white/20 p-2 rounded-lg"><i class="fas fa-crown text-yellow-400"></i></div>
-                    <span class="text-xl font-bold tracking-tight">PREMIUM PANEL</span>
-                </div>
-                <button onclick="logout()" class="bg-white/10 hover:bg-white/20 p-3 rounded-xl transition"><i class="fas fa-power-off"></i></button>
+        <div class="p-6 flex justify-between items-center bg-slate-900/50 sticky top-0 z-40 backdrop-blur-md border-b border-white/5">
+            <div>
+                <div id="display-date" class="text-[10px] text-blue-400 font-bold uppercase tracking-tighter">LOADING...</div>
+                <div id="display-clock" class="text-2xl font-bold clock-font text-white leading-tight">00:00:00</div>
             </div>
-            
-            <div class="grid grid-cols-2 gap-4">
-                <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10">
-                    <p class="text-3xl font-bold" id="total-val">0</p>
-                    <p class="text-xs opacity-60 uppercase tracking-widest">Total Users</p>
+            <button onclick="logout()" class="w-10 h-10 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center hover:bg-red-500/20 transition">
+                <i class="fas fa-power-off"></i>
+            </button>
+        </div>
+
+        <div class="px-6 py-4">
+            <div class="premium-gradient p-6 rounded-[2rem] shadow-2xl flex justify-around text-center">
+                <div>
+                    <p class="text-2xl font-bold" id="total-val">0</p>
+                    <p class="text-[10px] opacity-70 font-semibold uppercase">Total</p>
                 </div>
-                <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10">
-                    <p class="text-3xl font-bold text-green-400" id="active-val">0</p>
-                    <p class="text-xs opacity-60 uppercase tracking-widest">Online Now</p>
+                <div class="w-px h-10 bg-white/20"></div>
+                <div>
+                    <p class="text-2xl font-bold text-green-300" id="active-val">0</p>
+                    <p class="text-[10px] opacity-70 font-semibold uppercase">Online</p>
                 </div>
             </div>
         </div>
 
-        <div class="px-6 -mt-8">
-            <div class="glass-card p-3 rounded-2xl flex gap-3 shadow-xl">
-                <div class="relative flex-1">
-                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
-                    <input type="text" id="search" placeholder="Search VIP..." class="w-full pl-10 pr-4 py-3 rounded-xl outline-none text-sm">
-                </div>
-                <button onclick="openAddModal()" class="premium-gradient px-6 rounded-xl font-bold text-sm shadow-blue-500/20 shadow-lg">+ ADD</button>
+        <div class="px-6 mt-4 flex gap-2">
+            <div class="relative flex-1">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
+                <input type="text" id="search" placeholder="Search Client..." class="w-full pl-10 pr-4 py-4 rounded-2xl outline-none text-sm glass-card border-none">
             </div>
+            <button onclick="openAddModal()" class="w-14 h-14 premium-gradient rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+                <i class="fas fa-plus text-white text-xl"></i>
+            </button>
         </div>
 
         <div id="user-container" class="p-6 space-y-4 pb-32">
             </div>
 
-        <button onclick="toggleSettings()" class="fixed bottom-8 right-8 w-16 h-16 premium-gradient rounded-full shadow-2xl flex items-center justify-center text-2xl border-4 border-[#0f172a] hover:scale-110 transition">
-            <i class="fas fa-cog"></i>
+        <button onclick="toggleSettings()" class="fixed bottom-8 right-8 w-16 h-16 bg-slate-800 rounded-full shadow-2xl flex items-center justify-center text-blue-400 border border-white/10 hover:rotate-90 transition-all duration-500">
+            <i class="fas fa-cog text-2xl"></i>
         </button>
     </div>
 
-    <div id="modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 z-50">
-        <div class="glass-card w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl">
-            <h3 id="modal-title" class="text-2xl font-bold mb-6 text-center">Manage User</h3>
-            <div class="space-y-4">
-                <input type="hidden" id="edit-index">
-                <input type="text" id="u-name" placeholder="User Name" class="w-full p-4 rounded-2xl outline-none">
-                <input type="date" id="u-expiry" class="w-full p-4 rounded-2xl outline-none">
-                <div class="flex gap-3 mt-4">
-                    <button onclick="closeModal()" class="flex-1 py-4 bg-slate-700 rounded-2xl font-bold hover:bg-slate-600 transition">Cancel</button>
-                    <button onclick="saveUser()" class="flex-1 py-4 premium-gradient rounded-2xl font-bold shadow-lg shadow-blue-500/20">Save</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="settings-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 z-50">
-        <div class="glass-card w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl border-blue-500/30">
-            <h3 class="text-2xl font-bold mb-6 text-center"><i class="fas fa-user-lock mr-2 text-blue-400"></i>Settings</h3>
-            <div class="space-y-4">
-                <div>
-                    <label class="text-xs text-slate-400 ml-2 mb-1 block">New Admin Username</label>
-                    <input type="text" id="new-adm-user" class="w-full p-4 rounded-2xl outline-none">
-                </div>
-                <div>
-                    <label class="text-xs text-slate-400 ml-2 mb-1 block">New Admin Password</label>
-                    <input type="password" id="new-adm-pass" class="w-full p-4 rounded-2xl outline-none">
-                </div>
-                <div class="flex gap-3 mt-4">
-                    <button onclick="toggleSettings()" class="flex-1 py-4 bg-slate-700 rounded-2xl font-bold">Close</button>
-                    <button onclick="saveAdminSettings()" class="flex-1 py-4 premium-gradient rounded-2xl font-bold shadow-lg">Update</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
+    <div id="modal-container"></div> <script>
         let users = JSON.parse(localStorage.getItem('vip_users')) || [];
         let ADMIN_DATA = JSON.parse(localStorage.getItem('admin_settings')) || { user: "admin", pass: "123456" };
 
+        // --- REAL-TIME CLOCK ---
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const dateStr = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', weekday: 'short' });
+            document.getElementById('display-clock').innerText = timeStr;
+            document.getElementById('display-date').innerText = dateStr;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // --- AUTH ---
         function handleLogin() {
             const u = document.getElementById('adm-user').value;
             const p = document.getElementById('adm-pass').value;
             if (u === ADMIN_DATA.user && p === ADMIN_DATA.pass) {
-                document.getElementById('login-page').classList.add('hidden');
-                document.getElementById('main-dashboard').classList.remove('hidden');
+                document.getElementById('login-page').style.display = 'none';
+                document.getElementById('main-dashboard').style.display = 'block';
                 renderUsers();
-            } else { alert("Login Failed!"); }
+            } else { alert("ACCESS DENIED!"); }
         }
 
+        // --- RENDER ---
         function renderUsers() {
             const container = document.getElementById('user-container');
             container.innerHTML = '';
             document.getElementById('total-val').innerText = users.length;
-            
-            // Online status ကို စမ်းသပ်ရန် random လုပ်ထားပါသည်
             let onlineCount = 0;
 
             users.forEach((user, index) => {
-                const isOnline = Math.random() > 0.3; // 70% chance online
+                const isOnline = Math.random() > 0.4; // Simulated
                 if(isOnline) onlineCount++;
                 const progress = calculateProgress(user.expiry);
+                const daysLeft = calculateDaysLeft(user.expiry);
                 
                 container.innerHTML += `
-                    <div class="glass-card p-5 rounded-3xl relative overflow-hidden transition hover:border-blue-500/50">
-                        <div class="flex justify-between items-start">
+                    <div class="glass-card p-5 rounded-[2rem] relative overflow-hidden group">
+                        <div class="flex justify-between items-center mb-4">
                             <div class="flex items-center gap-3">
-                                <div class="w-2 h-2 rounded-full ${isOnline ? 'bg-green-500 shadow-[0_0_8px_#10b981]' : 'bg-slate-600'}"></div>
+                                <div class="w-3 h-3 rounded-full glow-dot ${isOnline ? 'bg-green-500' : 'bg-slate-700'}"></div>
                                 <div>
-                                    <h4 class="font-bold text-lg text-slate-100">${user.name}</h4>
-                                    <p class="text-[10px] ${isOnline ? 'status-online' : 'status-offline'} font-bold uppercase tracking-widest">
-                                        ${isOnline ? 'Connected' : 'Disconnected'}
+                                    <h4 class="font-bold text-slate-100">${user.name}</h4>
+                                    <p class="text-[9px] font-bold uppercase ${isOnline ? 'text-green-500' : 'text-slate-500'} tracking-widest">
+                                        ${isOnline ? 'Online' : 'Offline'}
                                     </p>
                                 </div>
                             </div>
                             <div class="flex gap-1">
-                                <button onclick="copyConfig('${user.name}')" class="w-10 h-10 flex items-center justify-center text-blue-400 hover:bg-blue-500/10 rounded-xl transition"><i class="fas fa-copy"></i></button>
-                                <button onclick="editUser(${index})" class="w-10 h-10 flex items-center justify-center text-amber-400 hover:bg-amber-500/10 rounded-xl transition"><i class="fas fa-edit"></i></button>
-                                <button onclick="deleteUser(${index})" class="w-10 h-10 flex items-center justify-center text-rose-500 hover:bg-rose-500/10 rounded-xl transition"><i class="fas fa-trash-alt"></i></button>
+                                <button onclick="copyConfig('${user.name}')" class="w-9 h-9 flex items-center justify-center text-blue-400 bg-blue-500/5 rounded-xl hover:bg-blue-500/20"><i class="fas fa-copy text-sm"></i></button>
+                                <button onclick="editUser(${index})" class="w-9 h-9 flex items-center justify-center text-amber-400 bg-amber-500/5 rounded-xl hover:bg-amber-500/20"><i class="fas fa-edit text-sm"></i></button>
+                                <button onclick="deleteUser(${index})" class="w-9 h-9 flex items-center justify-center text-rose-500 bg-rose-500/5 rounded-xl hover:bg-rose-500/20"><i class="fas fa-trash-alt text-sm"></i></button>
                             </div>
                         </div>
                         
-                        <div class="mt-6 grid grid-cols-2 gap-2 text-[11px] text-slate-400">
-                            <div><i class="fas fa-calendar-alt mr-2 text-blue-500"></i>Expiry: ${user.expiry}</div>
-                            <div class="text-right"><i class="fas fa-clock mr-2 text-blue-500"></i>${calculateDaysLeft(user.expiry)} Days Left</div>
+                        <div class="flex justify-between items-end text-[10px] text-slate-400 font-medium">
+                            <span><i class="far fa-calendar-check mr-1 text-blue-500"></i> ${user.expiry}</span>
+                            <span class="${daysLeft < 5 ? 'text-red-400' : 'text-blue-400'}">${daysLeft} Days Left</span>
                         </div>
 
-                        <div class="mt-3">
-                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden flex">
-                                <div class="premium-gradient h-full transition-all duration-1000" style="width: ${progress}%"></div>
-                            </div>
+                        <div class="mt-2 w-full bg-slate-800/50 h-1.5 rounded-full overflow-hidden">
+                            <div class="premium-gradient h-full shadow-[0_0_10px_#3b82f6]" style="width: ${progress}%"></div>
                         </div>
                     </div>
                 `;
@@ -172,60 +150,86 @@
             document.getElementById('active-val').innerText = onlineCount;
         }
 
+        // --- HELPERS ---
         function calculateProgress(exp) {
             const diff = new Date(exp) - new Date();
-            const percent = (Math.ceil(diff / (1000 * 60 * 60 * 24)) / 30) * 100;
-            return Math.min(100, Math.max(0, Math.round(percent)));
+            const p = (Math.ceil(diff / (1000 * 60 * 60 * 24)) / 30) * 100;
+            return Math.min(100, Math.max(0, Math.round(p)));
+        }
+        function calculateDaysLeft(exp) { return Math.max(0, Math.ceil((new Date(exp) - new Date()) / (1000 * 60 * 60 * 24))); }
+        function logout() { location.reload(); }
+
+        // --- MODAL FUNCTIONS ---
+        function openAddModal() {
+            const html = `
+            <div id="modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center p-6 z-50">
+                <div class="glass-card w-full max-w-sm rounded-[2.5rem] p-8">
+                    <h3 class="text-xl font-bold mb-6 text-center">VIP Management</h3>
+                    <div class="space-y-4">
+                        <input type="hidden" id="edit-index">
+                        <input type="text" id="u-name" placeholder="Username" class="w-full p-4 rounded-2xl outline-none">
+                        <input type="date" id="u-expiry" class="w-full p-4 rounded-2xl outline-none">
+                        <div class="flex gap-3 pt-4">
+                            <button onclick="closeModal()" class="flex-1 py-4 bg-slate-800 rounded-2xl font-bold">Cancel</button>
+                            <button onclick="saveUser()" class="flex-1 py-4 premium-gradient rounded-2xl font-bold shadow-lg">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+            document.getElementById('modal-container').innerHTML = html;
         }
 
-        function calculateDaysLeft(exp) {
-            const diff = new Date(exp) - new Date();
-            return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+        function toggleSettings() {
+            const html = `
+            <div id="settings-modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center p-6 z-50">
+                <div class="glass-card w-full max-w-sm rounded-[2.5rem] p-8 border-blue-500/20">
+                    <h3 class="text-xl font-bold mb-6 text-center">Admin Settings</h3>
+                    <div class="space-y-4 text-left">
+                        <input type="text" id="new-adm-user" value="${ADMIN_DATA.user}" class="w-full p-4 rounded-2xl outline-none">
+                        <input type="password" id="new-adm-pass" value="${ADMIN_DATA.pass}" class="w-full p-4 rounded-2xl outline-none">
+                        <div class="flex gap-3 pt-4">
+                            <button onclick="closeModal()" class="flex-1 py-4 bg-slate-800 rounded-2xl font-bold">Close</button>
+                            <button onclick="saveAdminSettings()" class="flex-1 py-4 premium-gradient rounded-2xl font-bold shadow-lg">Update</button>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+            document.getElementById('modal-container').innerHTML = html;
         }
 
         function saveUser() {
             const name = document.getElementById('u-name').value;
             const expiry = document.getElementById('u-expiry').value;
             const idx = document.getElementById('edit-index').value;
-            if(!name || !expiry) return alert("Fill all fields!");
-
+            if(!name || !expiry) return;
             if(idx !== "") users[idx] = { name, expiry };
             else users.push({ name, expiry });
-
             localStorage.setItem('vip_users', JSON.stringify(users));
             closeModal(); renderUsers();
         }
 
-        function copyConfig(name) {
-            const config = `vless://uuid-here@yourdomain.com:443?security=reality&sni=google.com&fp=chrome&type=grpc&serviceName=grpc#${encodeURIComponent(name)}`;
-            navigator.clipboard.writeText(config);
-            alert("V2Ray Config Copied for " + name);
-        }
-
-        function toggleSettings() {
-            const m = document.getElementById('settings-modal');
-            m.classList.toggle('hidden');
-            document.getElementById('new-adm-user').value = ADMIN_DATA.user;
-            document.getElementById('new-adm-pass').value = ADMIN_DATA.pass;
+        function editUser(i) {
+            openAddModal();
+            document.getElementById('edit-index').value = i;
+            document.getElementById('u-name').value = users[i].name;
+            document.getElementById('u-expiry').value = users[i].expiry;
         }
 
         function saveAdminSettings() {
-            ADMIN_DATA = { 
-                user: document.getElementById('new-adm-user').value, 
-                pass: document.getElementById('new-adm-pass').value 
-            };
+            ADMIN_DATA = { user: document.getElementById('new-adm-user').value, pass: document.getElementById('new-adm-pass').value };
             localStorage.setItem('admin_settings', JSON.stringify(ADMIN_DATA));
-            alert("Settings Updated! Please Login again.");
-            logout();
+            alert("Updated! Re-login required."); logout();
         }
 
-        function deleteUser(i) { if(confirm("Are you sure?")) { users.splice(i,1); localStorage.setItem('vip_users', JSON.stringify(users)); renderUsers(); } }
-        function openAddModal() { document.getElementById('modal').classList.remove('hidden'); document.getElementById('edit-index').value = ""; document.getElementById('u-name').value = ""; }
-        function editUser(i) { openAddModal(); document.getElementById('edit-index').value = i; document.getElementById('u-name').value = users[i].name; document.getElementById('u-expiry').value = users[i].expiry; }
-        function closeModal() { document.getElementById('modal').classList.add('hidden'); }
-        function logout() { location.reload(); }
+        function copyConfig(name) {
+            navigator.clipboard.writeText(`vless://uuid@yourdomain.com:443?security=reality&sni=google.com&fp=chrome&type=grpc&serviceName=grpc#${encodeURIComponent(name)}`);
+            alert("Config Copied!");
+        }
 
-        // Search logic
+        function deleteUser(i) { if(confirm("Delete User?")) { users.splice(i,1); localStorage.setItem('vip_users', JSON.stringify(users)); renderUsers(); } }
+        function closeModal() { document.getElementById('modal-container').innerHTML = ''; }
+        
+        // Search
         document.getElementById('search').addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase();
             const cards = document.querySelectorAll('#user-container > div');
